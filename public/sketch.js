@@ -1,9 +1,27 @@
 let img;
 let poseNet;
+let dropzone;
 let poses = [];
 
 function setup() {
-    img = createImg('data/dustin_johnson_setup.png', imageReady);
+    dropzone = select('#dropzone');
+    dropzone.dragOver(highlight);
+    dropzone.dragLeave(unhighlight);
+    dropzone.drop(gotFile, unhighlight);
+}
+
+function gotFile(file) {
+    // Delete any canvas elements on the page. 
+    img = createImg(file.data, imageReady);
+    img.hide();
+}
+
+function highlight() {
+    dropzone.style('background-color', '#ccc');
+}
+
+function unhighlight() {
+    dropzone.style('background-color', '#fff');
 }
 
 // when the image is ready, then load up the image dimensions and poseNet
@@ -53,7 +71,6 @@ function imageReady(){
 
 // when poseNet is ready, do the detection
 function modelReady() {
-    select('#status').html('Model Loaded');
      
     // When the model is ready, run the singlePose() function...
     // If/When a pose is detected, poseNet.on('pose', ...) will be listening for the detection results 

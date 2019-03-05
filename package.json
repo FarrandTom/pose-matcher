@@ -11,8 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cloudant/cloudant": "^3.0.2",
     "@tensorflow/tfjs": "^0.12.7",
     "body-parser": "^1.18.3",
+    "cfenv": "^1.2.0",
+    "cloudant": "^1.10.0-NOTICE",
     "compute-l2norm": "^1.1.0",
     "express": "^4.16.4",
     "ml5": "^0.2.1"

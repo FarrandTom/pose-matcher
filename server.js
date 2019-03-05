@@ -1,6 +1,7 @@
 var express = require('express');
 var l2norm = require( 'compute-l2norm' );
-var bodyParser = require("body-parser");
+var bodyParser = require('body-parser');
+var Cloudant = require('@cloudant/cloudant');
 
 var app = express();
 var server = app.listen(3000);
@@ -10,7 +11,13 @@ var server = app.listen(3000);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// Serving static files from the public directory
 app.use(express.static('public'));
+
+// Loading local VCAP parameters to allow connection to Cloudant database
+var vcapLocal;
+
+
 
 justin_rose_setup = [ 0.17970555707549749,
   0.09236892609229846,
