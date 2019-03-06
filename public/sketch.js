@@ -11,7 +11,9 @@ function setup() {
 }
 
 function gotFile(file) {
-    // Delete any canvas elements on the page. 
+    // Set poses.length to 0 so that the draw loop is triggered.
+    poses.length = 0;
+
     img = createImg(file.data, imageReady);
     img.hide();
 }
@@ -31,6 +33,10 @@ function imageReady(){
         imageScaleFactor: 0.9,
         minConfidence: 0.1
     }
+
+    let request;
+    let buffer;
+    let full_b64;
 
     // Getting the original dimensions of the image
     og_width = img.width;
@@ -58,14 +64,24 @@ function imageReady(){
     // This sets up an event that listens to 'pose' events
     poseNet.on('pose', function (results) {
         poses = results;
-        $.ajax({
-            type: "post",
-            url: "/poses",
-            data: JSON.stringify(results),
-            success: console.log('200'),
-            dataType: 'JSON',
-            contentType: 'application/json'
-          });
+        
+        request = $.ajax({
+                type: "post",
+                url: "/poses",
+                data: JSON.stringify(results),
+                dataType: 'JSON',
+                contentType: 'application/json'
+            });
+
+        // Callback handler that will be called on success
+        request.done(function (response, textStatus, jqXHR){
+            // Log a message to the console
+            buffer = response[1];
+
+            full_b64 = "data:image/png;base64," + buffer;
+            console.log(full_b64);
+            createImg(full_b64);
+        });
     });
 }
 
@@ -78,15 +94,15 @@ function modelReady() {
     poseNet.singlePose(img)
 }
 
-// draw() will not show anything until poses are found
 function draw() {
     if (poses.length > 0) {
         image(img, 0, 0, width, height);
         drawSkeleton(poses);
         drawKeypoints(poses);
-        noLoop(); // stop looping when the poses are estimated
-    }
 
+        // Need to get a more efficient way of rendering new images
+        // noLoop(); // stop looping when the poses are estimated
+    }
 }
 
 // A function to draw ellipses over the detected keypoints

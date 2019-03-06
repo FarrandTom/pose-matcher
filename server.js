@@ -2,6 +2,7 @@ var express = require('express');
 var l2norm = require( 'compute-l2norm' );
 var bodyParser = require('body-parser');
 var Cloudant = require('@cloudant/cloudant');
+var cfenv = require('cfenv');
 
 var app = express();
 var server = app.listen(3000);
@@ -16,61 +17,21 @@ app.use(express.static('public'));
 
 // Loading local VCAP parameters to allow connection to Cloudant database
 var vcapLocal;
+try {
+  vcapLocal = require('./vcap-local.json');
+  console.log('Loaded local VCAP credentials!');
+} catch (e) {}
 
+const appEnvOpts = vcapLocal ? {vcap: vcapLocal} : {}
+const appEnv = cfenv.getAppEnv(appEnvOpts);
 
+// Connect to our Cloudant instance using the local credentials
+// To use env variables (i.e. app is deployed into the cloud) see below:
+// https://github.com/IBM-Cloud/get-started-node/blob/master/server.js
+cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
-justin_rose_setup = [ 0.17970555707549749,
-  0.09236892609229846,
-  0.19049598104784266,
-  0.0859152670886969,
-  0.18144193426798524,
-  0.08386886339411645,
-  0.16432168459447394,
-  0.06289070948871929,
-  0.16880480191818856,
-  0.06895996584044545,
-  0.14077852641182892,
-  0.09600220110292149,
-  0.128904290872096,
-  0.10342838392798122,
-  0.12204716634023208,
-  0.16777081340533315,
-  0.12000816959904793,
-  0.17064071417678334,
-  0.13255993648104336,
-  0.2228372227880349,
-  0.13289191600526182,
-  0.22383787261607413,
-  0.04420532616356833,
-  0.18518281835265474,
-  0.05947606779363721,
-  0.1879432879369498,
-  0.07949649755336884,
-  0.2820087428268034,
-  0.08685021588348672,
-  0.2791258718156044,
-  0.08097705830905186,
-  0.3652642949162878,
-  0.07365678990129503,
-  0.37633378116507293,
-  0.9520760774612427,
-  0.13378602266311646,
-  0.9283162355422974,
-  0.055756017565727234,
-  0.9794830083847046,
-  0.5682874917984009,
-  0.8706150650978088,
-  0.45390671491622925,
-  0.9562039375305176,
-  0.7583954930305481,
-  0.6249509453773499,
-  0.6855019927024841,
-  0.8791465163230896,
-  0.3744296133518219,
-  0.708235502243042,
-  0.5363864302635193,
-  0.7279551029205322,
-  11.193432167172432 ]
+// Connect to the database we will use.
+pro_golfers_db = cloudant.db.use('pro_golfers')
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
@@ -98,13 +59,36 @@ function weightedDistanceMatching(poseVector1, poseVector2) {
   return summation1 * summation2;
 }
 
+function getKeyByValue(object, value) {
+  console.log(Object.keys(object));
+  return Object.keys(object).find(key => object[key] === value);
+}
+
+function minValueFromResults(results_array, min_value) {
+  for (var entry in results_array) {
+    if (results_array[entry]['Score'] === min_value) {
+      matching_name = results_array[entry];
+      return matching_name;
+    }
+  }
+}
 
 app.post('/poses', (req, res) => {
-  keypoints = req.body[0]['pose']['keypoints']
+  let point;
+  let xy_array = [];
+  let confidence_array = [];
 
-  var point;
-  var xy_array = [];
-  var confidence_array = [];
+  let norm;
+  let norm_xy_array;
+  let new_array;
+
+  let results_array = [];
+  let scores_array = [];
+  let doc_array = [];
+  let matching_name = '';
+  let successful_response;
+
+  keypoints = req.body[0]['pose']['keypoints']
 
   for (point in keypoints) {
     x_position = keypoints[point]['position']['x'];
@@ -118,18 +102,62 @@ app.post('/poses', (req, res) => {
   };
 
   // Normalising the xy keypoint array using the L2 (euclidean) norm
-  var norm = l2norm(xy_array);
-  var norm_xy_array = xy_array.map(function(element) {
+  norm = l2norm(xy_array);
+  norm_xy_array = xy_array.map(function(element) {
     return element/norm;
   });
 
   confidence_sum = confidence_array.reduce((a, b) => a + b, 0);
   confidence_array.push(confidence_sum);
 
-  var final_array = norm_xy_array.concat(confidence_array);
+  new_array = norm_xy_array.concat(confidence_array);
 
-  var result = weightedDistanceMatching(final_array, justin_rose_setup);
-  console.log(result);
+  // Intermediate code to allow database to be populated with golfer poses.
+  // golfer_doc = {'_id': 'justin_rose_backswing',
+  //               'name': 'Justin Rose',
+  //               'pose': 'backswing',
+  //               'array': new_array};
+              
+  // pro_golfers_db.insert(golfer_doc, function(err, body, header) {
+  //   if (err) {
+  //     console.log('[pro_golfers_db.insert]', err.message);
+  //     res.send('Error');
+  //     return;
+  //   }
+  //   res.send(golfer_doc);
+  // })
 
-  res.send('Got a POST request')
+  pro_golfers_db.list({ include_docs: true }, function(err, body) {
+    if (!err) {
+      body.rows.forEach(function(doc) {
+        doc_array = doc['doc']['array'];
+  
+        compared_score = weightedDistanceMatching(new_array, doc_array);
+  
+        results_array.push({
+          'id': doc['id'],
+          'Score': compared_score
+          });
+  
+        scores_array.push(compared_score);
+        });
+      }
+
+      const min_value = Math.min.apply(Math, scores_array);
+      matching_name = minValueFromResults(results_array, min_value);
+      console.log(matching_name);
+
+      pro_golfers_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
+        if (!err) {
+          successful_response = [matching_name, body.toString('base64')];
+          res.send(successful_response);
+          console.log(successful_response);
+          // fs.writeFile('justin_rose_setup.png', body);
+        } else {
+          console.log(err);
+        }
+      });
+    });
+
+
 })
