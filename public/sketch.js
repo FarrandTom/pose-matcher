@@ -38,6 +38,9 @@ function imageReady(){
     let buffer;
     let full_b64;
 
+    let player_name;
+    let score;
+
     // Getting the original dimensions of the image
     og_width = img.width;
     og_height = img.height;
@@ -77,10 +80,14 @@ function imageReady(){
         request.done(function (response, textStatus, jqXHR){
             // Log a message to the console
             buffer = response[1];
+            player_name = response[0]['Name'];
+            score = response[0]['Score'];
 
             full_b64 = "data:image/png;base64," + buffer;
-            console.log(full_b64);
+            createP(player_name);
+            createP(score);
             createImg(full_b64);
+
         });
     });
 }

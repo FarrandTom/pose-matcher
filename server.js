@@ -131,12 +131,13 @@ app.post('/poses', (req, res) => {
     if (!err) {
       body.rows.forEach(function(doc) {
         doc_array = doc['doc']['array'];
-  
+
         compared_score = weightedDistanceMatching(new_array, doc_array);
   
         results_array.push({
           'id': doc['id'],
-          'Score': compared_score
+          'Score': compared_score,
+          'Name': doc['doc']['name']
           });
   
         scores_array.push(compared_score);
@@ -145,13 +146,11 @@ app.post('/poses', (req, res) => {
 
       const min_value = Math.min.apply(Math, scores_array);
       matching_name = minValueFromResults(results_array, min_value);
-      console.log(matching_name);
 
       pro_golfers_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
         if (!err) {
           successful_response = [matching_name, body.toString('base64')];
           res.send(successful_response);
-          console.log(successful_response);
           // fs.writeFile('justin_rose_setup.png', body);
         } else {
           console.log(err);

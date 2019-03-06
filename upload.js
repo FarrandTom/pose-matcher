@@ -21,16 +21,18 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 // Connect to the database we will use.
 pro_golfers_db = cloudant.db.use('pro_golfers')
 
-// set the filepath
-const filepath = 'public/data/justin_thomas_setup.png';
+// Setting constants
+const image_name = 'justin_rose_setup'
+const filepath = 'public/data/' + image_name + '.png';
+
 
 // get the mimetype
 const filemime = mime.getType(filepath);
 
 fs.readFile(filepath, function(err, data) {
     if (!err) {
-      pro_golfers_db.attachment.insert('justin_rose_setup', 'justin_rose_setup_image', data, filemime,
-        { rev: "5-db8f514265817ea1dc909f2ab4a8e4e5" }, function(err, body) {
+      pro_golfers_db.attachment.insert(image_name, image_name + '_image', data, filemime,
+        { rev: "7-305bd6e62d6a65bd85a0415d04893079" }, function(err, body) {
           if (!err) {
             console.log(body);
           } else {
