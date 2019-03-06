@@ -1,0 +1,25 @@
+h1 {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.dropzone {
+  border-style: round;
+  border: 1px solid black;
+  height: 30px;
+  width: 180px;
+  border-radius: 25px;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+
+.p5Canvas {
+  margin-top: 20px;
+
+}
+
+.wrapper {
+margin-top: 30px;
+}

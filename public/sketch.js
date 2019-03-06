@@ -47,12 +47,12 @@ function imageReady(){
     // Calculating the scaled and resized height and width of the image.
     // All images maintain a fixed width.
     aspect_ratio = og_height / og_width;
-    
+
     width = 360;
     height = aspect_ratio * width;
 
     // The width and heigh ratios are used to scale the drawing of the keypoints
-    // and skeletion. 
+    // and skeletion.
     width_ratio = width / og_width;
     height_ratio = height / og_height;
 
@@ -67,7 +67,7 @@ function imageReady(){
     // This sets up an event that listens to 'pose' events
     poseNet.on('pose', function (results) {
         poses = results;
-        
+
         request = $.ajax({
                 type: "post",
                 url: "/poses",
@@ -86,7 +86,10 @@ function imageReady(){
             full_b64 = "data:image/png;base64," + buffer;
             createP(player_name);
             createP(score);
+            console.log(typeof score);
             createImg(full_b64);
+            document.getElementById("Name").innerHTML = "Name: " + player_name;
+            document.getElementById("Score").innerHTML = "Score: " + round(100-(score*100)) + "%";
 
         });
     });
@@ -94,9 +97,9 @@ function imageReady(){
 
 // when poseNet is ready, do the detection
 function modelReady() {
-     
+
     // When the model is ready, run the singlePose() function...
-    // If/When a pose is detected, poseNet.on('pose', ...) will be listening for the detection results 
+    // If/When a pose is detected, poseNet.on('pose', ...) will be listening for the detection results
     // in the draw() loop, if there are any poses, then carry out the draw commands
     poseNet.singlePose(img)
 }
@@ -143,7 +146,7 @@ function drawSkeleton() {
             let partB = skeleton[j][1];
             stroke(255);
             strokeWeight(1);
-            line(partA.position.x * width_ratio, partA.position.y * height_ratio, 
+            line(partA.position.x * width_ratio, partA.position.y * height_ratio,
                  partB.position.x * width_ratio, partB.position.y * height_ratio);
         }
     }
