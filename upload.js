@@ -22,7 +22,7 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 pro_golfers_db = cloudant.db.use('pro_golfers')
 
 // Setting constants
-const image_name = 'justin_rose_setup'
+const image_name = 'sung_hyun_park_setup'
 const filepath = 'public/data/' + image_name + '.png';
 
 
@@ -32,7 +32,7 @@ const filemime = mime.getType(filepath);
 fs.readFile(filepath, function(err, data) {
     if (!err) {
       pro_golfers_db.attachment.insert(image_name, image_name + '_image', data, filemime,
-        { rev: "7-305bd6e62d6a65bd85a0415d04893079" }, function(err, body) {
+        { rev: "1-303a13fb154d81b22086f5afd80c592b" }, function(err, body) {
           if (!err) {
             console.log(body);
           } else {

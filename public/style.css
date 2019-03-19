@@ -3,6 +3,18 @@ h1 {
   text-align: center;
 }
 
+.title{
+background-color: #3d70b2;
+color: white;
+padding: 10px 0px;
+
+}
+
+.bx--grid{
+  vertical-align: middle;
+  text-align: center;
+}
+
 .dropzone {
   border-style: round;
   border: 1px solid black;
@@ -14,11 +26,19 @@ h1 {
   text-align: center;
 }
 
-
-.p5Canvas {
-  margin-top: 20px;
-
+#Score {
+  padding: 0px 15px;
 }
+
+video {
+    width: 300;
+    height: 300;
+  }
+
+canvas {
+  margin-top: 20px;
+}
+
 
 .wrapper {
 margin-top: 30px;

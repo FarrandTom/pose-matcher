@@ -20,18 +20,23 @@
   <h1>Golf Swing PoseNet</h1>
 </div>
 
+
 <div class="bx--grid">
 
 <div id= "drop" class="bx--row wrapper">
+<div class="bx--col-xs-4 bx--col-xs-6">
+<button class="bx--btn bx--btn--secondary" id="addPhoto" >Snapshot</button><br>
+</div>
+<h2 id= "details" class="bx--col-xs-4 bx--col-xs-6" >
+  Your Match
+  </h2>
+</div>
 
-  <p class="dropzone bx--col-sm-3 bx--offset-xs-2" id= "dropzone">
-    Drop your file here.
-  </p>
+<div class="bx--row wrapper">
+<div class="bx--col-xs-4 bx--col-xs-6">
 
-<div class="bx--row wrapper2 bx--col-sm-3 bx--offset-xs-4">
-  <h2 class="details" id= "details">
-    Your Match
-    </h2>
+</div>
+<div class="bx--col-xs-4 bx--col-xs-6">
   <p class="details" id= "Name">
     Name:
   </p>
@@ -39,8 +44,18 @@
     Score:
   </p>
 </div>
-
 </div>
+
+
+<div class="bx--row wrapper">
+<div class="bx--col-xs-4 bx--col-xs-6" id="videoContainer"></div>
+<div class="bx--col-xs-4 bx--col-xs-6">
+<img id="result_image" width= 50% alt=""></img>
+</div>
+</div>
+
+
+
 
 <script src="sketch.js"></script>
 
@@ -48,7 +63,7 @@
      <!-- Our sketch will go here! -->
    </div>
 
-  <img id="result_image" class="bx--row" alt=""></img>
+
 
 </div>
 </body>
