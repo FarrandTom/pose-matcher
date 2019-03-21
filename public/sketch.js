@@ -4,12 +4,13 @@ let skeletons = [];
 let poses = [];
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(600, 450).parent('canvasContainer');
+
   video = createCapture(VIDEO);
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
-  poseNet = ml5.poseNet(video, modelReady);
+  poseNet = ml5.poseNet(video);
   // This sets up an event that fills the global variable "poses"
   // with an array every time new poses are detected
 
@@ -37,26 +38,15 @@ function submitRequest(results) {
 
 // Callback handler that will be called on success
 request.done(function (response, textStatus, jqXHR){
-
     buffer = response[1];
     player_name = response[0]['Name'];
     score = response[0]['Score'];
 
-  full_b64 = "data:image/png;base64," + buffer;
-
-  document.getElementById("result_image").src= full_b64;
-  document.getElementById("Name").innerHTML = "Name: " + player_name;
-  document.getElementById("Score").innerHTML = "Score: " + round(100-((score*5)*100)) + "%";
-
-});
-}
-
-// when poseNet is ready, do the detection
-function modelReady() {
-    // When the model is ready, run the singlePose() function...
-    // If/When a pose is detected, poseNet.on('pose', ...) will be listening for the detection results
-    // in the draw() loop, if there are any poses, then carry out the draw commands
-    poseNet.singlePose(video)
+    full_b64 = "data:image/png;base64," + buffer;
+    document.getElementById("result_image").src= full_b64;
+    document.getElementById("Name").innerHTML = "Name: " + player_name;
+    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*5)*100)) + "%";
+    });
 }
 
 function draw() {
