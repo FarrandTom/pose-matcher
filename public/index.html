@@ -2,7 +2,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>PoseNet example on image with single detection using p5.js</title>
+  <title>The Pose Matcher!</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
@@ -17,14 +17,14 @@
 <body>
 
 <div class= "title">
-  <h1>Golf Swing PoseNet</h1>
+  <h1>Match My Pose</h1>
 </div>
 
 <div class="bx--grid">
 
 <div id= "drop" class="bx--row wrapper">
 <div class="bx--col-xs-4 bx--col-xs-6">
-<button class="bx--btn bx--btn--secondary" id="addPhoto" >Capture your swing!</button><br>
+<button class="bx--btn bx--btn--secondary" id="addPhoto" >Capture your pose!</button><br>
 </div>
 <h2 id= "details" class="bx--col-xs-4 bx--col-xs-6" >
   Your Match
@@ -32,10 +32,10 @@
 </div>
 
 <div class="bx--row wrapper">
-<div class="bx--col-xs-4 bx--col-xs-6">
+<div class="bx--col-xs-6">
 
 </div>
-<div class="bx--col-xs-4 bx--col-xs-6">
+<div class="bx--col-xs-6">
   <p class="details" id= "Name">
     Name:
   </p>
@@ -47,14 +47,42 @@
 
 
 <div class="bx--row wrapper">
-<div class="bx--col-xs-4 bx--col-xs-6" id="canvasContainer"></div>
-<div class="bx--col-xs-4 bx--col-xs-6">
+<div class="bx--col-xs-6" id="canvasContainer"></div>
+<div class="bx--col-xs-6">
 <img id="result_image" width= 50% alt=""></img>
 </div>
 </div>
+</div>
 
+<div class="title">
+  <div class="centre">
+    <h2><u>Create Your Dataset</u></h2>
+  </div>
+  <div class="bx--row">
+    <div class="bx--col-xs-6 wrapper">
+      <p class="text">Drag and drop your custom photos here. You can add individual photos, or .zip files.
+        These will be added to your personal Cloudant 
+        database. If you do not have one setup, visit the Github page for this project here.
+      </p>
+    </div>
+    <div class="bx--col-xs-6">
+      <div class="uploadForm">
+          <form action="/upload_image" method="post"
+          name = "uploadForm" enctype="multipart/form-data">
+            <label>Name:</label>
+            <input id="formName" name="formName" type="text">
+            <label>Pose:</label>
+            <input id="poseName" name="poseName" type="text">
+            <input type="file"
+            id="filePicker" name="filePicker"
+            accept="image/png, image/jpeg">
+            <input type="submit" name="submit">
+          </form>
+      </div>
 
-
+    </div>
+  </div>
+</div>
 
 <script src="sketch.js"></script>
 
@@ -62,9 +90,6 @@
      <!-- Our sketch will go here! -->
    </div>
 
-
-
-</div>
 </body>
 
 </html>

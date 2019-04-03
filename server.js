@@ -112,21 +112,6 @@ app.post('/poses', (req, res) => {
 
   new_array = norm_xy_array.concat(confidence_array);
 
-  // Intermediate code to allow database to be populated with golfer poses.
-  // golfer_doc = {'_id': 'justin_rose_backswing',
-  //               'name': 'Justin Rose',
-  //               'pose': 'backswing',
-  //               'array': new_array};
-              
-  // pro_golfers_db.insert(golfer_doc, function(err, body, header) {
-  //   if (err) {
-  //     console.log('[pro_golfers_db.insert]', err.message);
-  //     res.send('Error');
-  //     return;
-  //   }
-  //   res.send(golfer_doc);
-  // })
-
   pro_golfers_db.list({ include_docs: true }, function(err, body) {
     if (!err) {
       body.rows.forEach(function(doc) {
@@ -157,6 +142,9 @@ app.post('/poses', (req, res) => {
         }
       });
     });
+});
 
 
-})
+app.post('/upload_image', (req, res) => {
+  console.log(req.body);
+});

@@ -2,6 +2,8 @@ let video;
 let poseNet;
 let skeletons = [];
 let poses = [];
+let filePicker;
+let uploadImg;
 
 function setup() {
   createCanvas(600, 450).parent('canvasContainer');
@@ -24,7 +26,50 @@ function setup() {
   })
   // Hide the video element, and just show the canvas
   video.hide();
+
+  // For when a new picture is uploaded to the website. 
+  // This watches the filePicker element, if there is a change it populates
+  // the form with the poses array. 
+  filePicker = select('#filePicker');
+  filePicker.changed(classifyUpload);
 };
+
+function classifyUpload() {
+    let files;
+    files = filePicker.elt.files;
+    
+    if (files.length) {
+      var reader = new FileReader();
+      
+      reader.onload = function(e) {
+        console.log(e.target.result);
+        uploadImg = createImg(e.target.result, uploadImgReady);
+        uploadImg.hide();
+      };
+
+      reader.readAsDataURL(files[0]);
+    }
+};
+
+// when the image is ready, then load up poseNet
+function uploadImgReady(){
+  // assign poseNet
+  uploadPoseNet = ml5.poseNet(uploadModelReady);
+  // This sets up an event that listens to 'pose' events
+  uploadPoseNet.on('pose', function (results) {
+      const formName = select('#formName').elt.value;
+      const poseName = select('#poseName').elt.value;
+
+      poses = results;
+      console.log(poses, formName, poseName);
+  });
+}
+
+// when poseNet is ready, do the detection
+function uploadModelReady() {
+  uploadPoseNet.singlePose(uploadImg)
+}
+
 
 // Submits an Ajax request to the backend server.
 function submitRequest(results) {
