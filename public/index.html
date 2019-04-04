@@ -60,8 +60,8 @@
   </div>
   <div class="bx--row">
     <div class="bx--col-xs-6 wrapper">
-      <p class="text">Drag and drop your custom photos here. You can add individual photos, or .zip files.
-        These will be added to your personal Cloudant 
+      <p class="text">Drag and drop your custom photos here. You can add individual photos 
+        to your personal Cloudant 
         database. If you do not have one setup, visit the Github page for this project here.
       </p>
     </div>
@@ -69,14 +69,14 @@
       <div class="uploadForm">
           <form action="/upload_image" method="post"
           name = "uploadForm" enctype="multipart/form-data">
-            <label>Name:</label>
+            <label for="formName">1) Name:</label>
             <input id="formName" name="formName" type="text">
-            <label>Pose:</label>
+            <label for="poseName">2) Pose:</label>
             <input id="poseName" name="poseName" type="text">
+            <label for="filePicker">3) Select your photo:</label>
             <input type="file"
             id="filePicker" name="filePicker"
             accept="image/png, image/jpeg">
-            <input type="submit" name="submit">
           </form>
       </div>
 

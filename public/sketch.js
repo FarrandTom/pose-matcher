@@ -42,7 +42,6 @@ function classifyUpload() {
       var reader = new FileReader();
       
       reader.onload = function(e) {
-        console.log(e.target.result);
         uploadImg = createImg(e.target.result, uploadImgReady);
         uploadImg.hide();
       };
@@ -59,9 +58,28 @@ function uploadImgReady(){
   uploadPoseNet.on('pose', function (results) {
       const formName = select('#formName').elt.value;
       const poseName = select('#poseName').elt.value;
+      const imgData = uploadImg.elt.src;
+      
+      const formatNames = formName.toLowerCase().replace(' ', '_');
+      const formatPoseName = poseName.toLowerCase().replace(' ', '_');
+      const databaseID = formatNames + '_' + formatPoseName;
 
-      poses = results;
-      console.log(poses, formName, poseName);
+      let uploadPoses = results;
+
+      fullData = {'_id': databaseID,
+                  'name': formName,
+                  'pose': formatPoseName,
+                  'array': uploadPoses,
+                  'imgData': imgData}  // Note: the uploadPoses still need to be processed.
+              
+      request = $.ajax({
+                    type: "post",
+                    url: "/upload_image",
+                    data: JSON.stringify(fullData),
+                    dataType: 'JSON',
+                    contentType: 'application/json'
+                });
+
   });
 }
 
@@ -84,6 +102,8 @@ function submitRequest(results) {
 // Callback handler that will be called on success
 request.done(function (response, textStatus, jqXHR){
     buffer = response[1];
+    console.log(buffer);
+
     player_name = response[0]['Name'];
     score = response[0]['Score'];
 

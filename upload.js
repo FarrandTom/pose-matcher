@@ -22,8 +22,8 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 pro_golfers_db = cloudant.db.use('pro_golfers')
 
 // Setting constants
-const image_name = 'sung_hyun_park_setup'
-const filepath = 'public/data/' + image_name + '.png';
+const image_name = 'tiger_woods_backswing'
+const filepath = '/Users/thomas.farrandibm.com/Desktop/tiger_woods_backswing.png'
 
 
 // get the mimetype
@@ -31,13 +31,18 @@ const filemime = mime.getType(filepath);
 
 fs.readFile(filepath, function(err, data) {
     if (!err) {
-      pro_golfers_db.attachment.insert(image_name, image_name + '_image', data, filemime,
-        { rev: "1-303a13fb154d81b22086f5afd80c592b" }, function(err, body) {
+      pro_golfers_db.get(image_name).then((body) => {
+        let revID = body['_rev'];
+    
+        pro_golfers_db.attachment.insert(image_name, image_name + '_image', data, filemime, 
+        { rev: revID }, function(err, body) {
+          console.log(filemime, data);
           if (!err) {
             console.log(body);
           } else {
             console.log(err);
           }
+        }); 
       });
     } else {
         console.log(err);

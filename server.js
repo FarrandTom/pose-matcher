@@ -10,7 +10,11 @@ var server = app.listen(3000);
 // Here we are configuring express to use body-parser as middle-ware.
 // This is so we can handle POST requests. 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+
+// If you wish to upload larger images to the backend then adjust the limit below
+// However, be aware that the Cloudant database will only accept a certain size of 
+// request.
+app.use(bodyParser.json({limit: '10mb'}));
 
 // Serving static files from the public directory
 app.use(express.static('public'));
@@ -35,7 +39,7 @@ pro_golfers_db = cloudant.db.use('pro_golfers')
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
-// Values 34-51: are confidence values for each of the 17 body parts in alphabetical order
+// Values 34-50: are confidence values for each of the 17 body parts in alphabetical order
 // Value 51: A sum of all the confidence values
 // Again the lower the number, the closer the distance
 function weightedDistanceMatching(poseVector1, poseVector2) {
@@ -59,11 +63,6 @@ function weightedDistanceMatching(poseVector1, poseVector2) {
   return summation1 * summation2;
 }
 
-function getKeyByValue(object, value) {
-  console.log(Object.keys(object));
-  return Object.keys(object).find(key => object[key] === value);
-}
-
 function minValueFromResults(results_array, min_value) {
   for (var entry in results_array) {
     if (results_array[entry]['Score'] === min_value) {
@@ -73,22 +72,13 @@ function minValueFromResults(results_array, min_value) {
   }
 }
 
-app.post('/poses', (req, res) => {
+function formatPoseArray(keypoints) {
   let point;
   let xy_array = [];
   let confidence_array = [];
 
   let norm;
   let norm_xy_array;
-  let new_array;
-
-  let results_array = [];
-  let scores_array = [];
-  let doc_array = [];
-  let matching_name = '';
-  let successful_response;
-
-  keypoints = req.body[0]['pose']['keypoints']
 
   for (point in keypoints) {
     x_position = keypoints[point]['position']['x'];
@@ -112,6 +102,22 @@ app.post('/poses', (req, res) => {
 
   new_array = norm_xy_array.concat(confidence_array);
 
+  return new_array;
+}
+
+
+app.post('/poses', (req, res) => {
+  let new_array;
+
+  let results_array = [];
+  let scores_array = [];
+  let doc_array = [];
+  let matching_name = '';
+  let successful_response;
+
+  keypoints = req.body[0]['pose']['keypoints']
+  new_array = formatPoseArray(keypoints);
+
   pro_golfers_db.list({ include_docs: true }, function(err, body) {
     if (!err) {
       body.rows.forEach(function(doc) {
@@ -132,7 +138,7 @@ app.post('/poses', (req, res) => {
       const min_value = Math.min.apply(Math, scores_array);
       matching_name = minValueFromResults(results_array, min_value);
 
-      pro_golfers_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
+      pro_golfers_db.attachment.get('tiger_woods_backswing', 'tiger_woods_backswing' + '_image', function(err, body) {
         if (!err) {
           successful_response = [matching_name, body.toString('base64')];
           res.send(successful_response);
@@ -146,5 +152,37 @@ app.post('/poses', (req, res) => {
 
 
 app.post('/upload_image', (req, res) => {
-  console.log(req.body);
+  const id = req.body['_id'];
+  const name = req.body['name'];
+  const pose = req.body['pose'];
+  const keypoints = req.body['array'][0]['pose']['keypoints'];
+  const imgData = req.body['imgData'];
+  
+  let newArray = formatPoseArray(keypoints);
+
+  newDocument = {'_id': id,
+                 'name': name,
+                 'pose': pose,
+                 'array': newArray};
+
+  pro_golfers_db.insert(newDocument, function(err, body, header) {
+    if (err) {
+      console.log('[pro_golfers_db.insert]', err.message);
+      res.send('Error');
+      return;
+    }
+    res.send(newDocument);
+  });
+
+  pro_golfers_db.get(id).then((body) => {
+    let revID = body['_rev'];
+    pro_golfers_db.attachment.insert(id, id + '_image', imgData, "image/png", 
+    { rev: revID }, function(err, body) {
+      if (!err) {
+        console.log(body);
+      } else {
+        console.log(err);
+      }
+    }); 
+  });
 });
