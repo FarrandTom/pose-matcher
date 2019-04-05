@@ -13,11 +13,13 @@
   "dependencies": {
     "@cloudant/cloudant": "^3.0.2",
     "@tensorflow/tfjs": "^0.12.7",
+    "base64-arraybuffer": "^0.1.5",
     "body-parser": "^1.18.3",
-    "cfenv": "^1.2.0",
+    "cfenv": "^1.2.2",
     "cloudant": "^1.10.0-NOTICE",
     "compute-l2norm": "^1.1.0",
     "express": "^4.16.4",
+    "file-type": "^10.10.0",
     "mime": "^2.4.0",
     "ml5": "^0.2.1"
   },

@@ -18,18 +18,6 @@ padding: 10px 0px;
   text-align: center;
 }
 
-#dropzone {
-  border-style: dashed;
-  border: 1px solid white;
-  height: 70px;
-  width: 250px;
-  font-size: 22px;
-  border-radius: 25px;
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
-
 #Score {
   padding: 0px 15px;
 }

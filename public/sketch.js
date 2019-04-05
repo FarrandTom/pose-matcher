@@ -43,6 +43,7 @@ function classifyUpload() {
       
       reader.onload = function(e) {
         uploadImg = createImg(e.target.result, uploadImgReady);
+        console.log(uploadImg);
         uploadImg.hide();
       };
 
@@ -69,8 +70,8 @@ function uploadImgReady(){
       fullData = {'_id': databaseID,
                   'name': formName,
                   'pose': formatPoseName,
-                  'array': uploadPoses,
-                  'imgData': imgData}  // Note: the uploadPoses still need to be processed.
+                  'array': uploadPoses,  // Note: the uploadPoses still need to be processed.
+                  'imgData': imgData}  
               
       request = $.ajax({
                     type: "post",
@@ -102,12 +103,13 @@ function submitRequest(results) {
 // Callback handler that will be called on success
 request.done(function (response, textStatus, jqXHR){
     buffer = response[1];
-    console.log(buffer);
 
     player_name = response[0]['Name'];
     score = response[0]['Score'];
 
     full_b64 = "data:image/png;base64," + buffer;
+    console.log(full_b64);
+
     document.getElementById("result_image").src= full_b64;
     document.getElementById("Name").innerHTML = "Name: " + player_name;
     document.getElementById("Score").innerHTML = "Score: " + round(100-((score*5)*100)) + "%";

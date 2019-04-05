@@ -1,11 +1,13 @@
-var express = require('express');
-var l2norm = require( 'compute-l2norm' );
-var bodyParser = require('body-parser');
-var Cloudant = require('@cloudant/cloudant');
-var cfenv = require('cfenv');
+const express = require('express');
+const l2norm = require( 'compute-l2norm' );
+const bodyParser = require('body-parser');
+const Cloudant = require('@cloudant/cloudant');
+const cfenv = require('cfenv');
+const fileType = require('file-type');
+const fs = require('fs');
 
-var app = express();
-var server = app.listen(3000);
+const app = express();
+const server = app.listen(3000);
 
 // Here we are configuring express to use body-parser as middle-ware.
 // This is so we can handle POST requests. 
@@ -140,9 +142,9 @@ app.post('/poses', (req, res) => {
 
       pro_golfers_db.attachment.get('tiger_woods_backswing', 'tiger_woods_backswing' + '_image', function(err, body) {
         if (!err) {
+          console.log(body);
           successful_response = [matching_name, body.toString('base64')];
           res.send(successful_response);
-          // fs.writeFile('justin_rose_setup.png', body);
         } else {
           console.log(err);
         }
@@ -157,13 +159,22 @@ app.post('/upload_image', (req, res) => {
   const pose = req.body['pose'];
   const keypoints = req.body['array'][0]['pose']['keypoints'];
   const imgData = req.body['imgData'];
+
+  // Must replace the meta data included at the start of the base64 string by the browser
+  // This is not used by node, and therefore causes it to corrupt the image.
+  const strippedImgData = imgData.replace(/^data:image\/(png|gif|jpeg);base64,/,'');
   
+  // Getting the pose classification into the correct format.
   let newArray = formatPoseArray(keypoints);
+  
+  // Converting our base64 encoded data to buffer- the datatype Cloudant uses
+  // as well as the other open source DB implementations (couchDB etc.) 
+  var bufferImgData = Buffer.from(strippedImgData, 'base64');
 
   newDocument = {'_id': id,
                  'name': name,
                  'pose': pose,
-                 'array': newArray};
+                 'array': newArray}
 
   pro_golfers_db.insert(newDocument, function(err, body, header) {
     if (err) {
@@ -172,17 +183,20 @@ app.post('/upload_image', (req, res) => {
       return;
     }
     res.send(newDocument);
+    addAttachment();
   });
 
-  pro_golfers_db.get(id).then((body) => {
-    let revID = body['_rev'];
-    pro_golfers_db.attachment.insert(id, id + '_image', imgData, "image/png", 
-    { rev: revID }, function(err, body) {
-      if (!err) {
-        console.log(body);
-      } else {
-        console.log(err);
-      }
-    }); 
-  });
+  function addAttachment() {
+    pro_golfers_db.get(id).then((body) => {
+      let revID = body['_rev'];
+      pro_golfers_db.attachment.insert(id, id + '_image', bufferImgData, "image/png", 
+      { rev: revID }, function(err, body) {
+        if (!err) {
+          console.log(body);
+        } else {
+          console.log(err);
+        }
+      }); 
+    });
+  };
 });
