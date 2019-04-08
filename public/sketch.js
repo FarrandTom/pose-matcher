@@ -43,7 +43,6 @@ function classifyUpload() {
       
       reader.onload = function(e) {
         uploadImg = createImg(e.target.result, uploadImgReady);
-        console.log(uploadImg);
         uploadImg.hide();
       };
 
@@ -80,7 +79,15 @@ function uploadImgReady(){
                     dataType: 'JSON',
                     contentType: 'application/json'
                 });
+        
+      // Callback handler that will be called on success
+      request.done(function (response){
+        const name = response['documentArray']['name'];
+        const pose = response['documentArray']['pose'];
 
+        document.getElementById("documentAddedFeedback").innerHTML = name +"'s " + pose + " added to Cloudant!";
+        document.getElementById("uploadForm").reset();
+      });
   });
 }
 
@@ -101,18 +108,17 @@ function submitRequest(results) {
     });
 
 // Callback handler that will be called on success
-request.done(function (response, textStatus, jqXHR){
+request.done(function (response){
     buffer = response[1];
 
     player_name = response[0]['Name'];
     score = response[0]['Score'];
 
     full_b64 = "data:image/png;base64," + buffer;
-    console.log(full_b64);
 
     document.getElementById("result_image").src= full_b64;
     document.getElementById("Name").innerHTML = "Name: " + player_name;
-    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*5)*100)) + "%";
+    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*10)*100)) + "%";
     });
 }
 
@@ -134,7 +140,7 @@ function drawKeypoints()  {
       let keypoint = poses[i].pose.keypoints[j];
       // Only draw an ellipse is the pose probability is bigger than 0.2
       if (keypoint.score > 0.2) {
-        fill(65, 214, 195);
+        fill(224, 26, 58);
         noStroke();
         ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
       }
@@ -150,7 +156,7 @@ function drawSkeleton() {
     for (let j = 0; j < poses[i].skeleton.length; j++) {
       let partA = poses[i].skeleton[j][0];
       let partB = poses[i].skeleton[j][1];
-      stroke(65, 214, 195);
+      stroke(224, 26, 58);
       line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
     }
   }

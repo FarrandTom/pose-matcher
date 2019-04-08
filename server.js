@@ -139,10 +139,10 @@ app.post('/poses', (req, res) => {
 
       const min_value = Math.min.apply(Math, scores_array);
       matching_name = minValueFromResults(results_array, min_value);
+      console.log(matching_name);
 
-      pro_golfers_db.attachment.get('tiger_woods_backswing', 'tiger_woods_backswing' + '_image', function(err, body) {
+      pro_golfers_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
         if (!err) {
-          console.log(body);
           successful_response = [matching_name, body.toString('base64')];
           res.send(successful_response);
         } else {
@@ -153,12 +153,43 @@ app.post('/poses', (req, res) => {
 });
 
 
+function insertDocument(document, response) {
+    pro_golfers_db.insert(document, function(err, body){
+      if (err) {
+        console.log('[pro_golfers_db.insert]', err.message);
+        response.send({ message: 'Unable to insert the document array!'});
+      } else {
+        response.send({ message: 'Successfully added your document array!',
+                        documentArray: document})
+      }
+    });
+  }
+
+
+function addAttachment(id, bufferImgData, contentType, response) {
+  pro_golfers_db.get(id).then((body) => {
+    let revID = body['_rev'];
+    pro_golfers_db.attachment.insert(id, id + '_image', bufferImgData, contentType, 
+    { rev: revID }, function(err, body) {
+      if (!err) {
+        console.log(body);
+      } else {
+        console.log(err);
+      }
+    }); 
+  });
+};
+
+
 app.post('/upload_image', (req, res) => {
   const id = req.body['_id'];
   const name = req.body['name'];
   const pose = req.body['pose'];
   const keypoints = req.body['array'][0]['pose']['keypoints'];
   const imgData = req.body['imgData'];
+
+  // Getting the content type so that it is correctly appended to the cloudant document
+  const contentType = imgData.match(/image\/(png|gif|jpeg)/);
 
   // Must replace the meta data included at the start of the base64 string by the browser
   // This is not used by node, and therefore causes it to corrupt the image.
@@ -171,32 +202,25 @@ app.post('/upload_image', (req, res) => {
   // as well as the other open source DB implementations (couchDB etc.) 
   var bufferImgData = Buffer.from(strippedImgData, 'base64');
 
-  newDocument = {'_id': id,
-                 'name': name,
-                 'pose': pose,
-                 'array': newArray}
+  document = {'_id': id,
+              'name': name,
+              'pose': pose,
+              'array': newArray}
 
-  pro_golfers_db.insert(newDocument, function(err, body, header) {
-    if (err) {
-      console.log('[pro_golfers_db.insert]', err.message);
-      res.send('Error');
-      return;
+  console.log(id);
+  pro_golfers_db.get(id, function(err, body) {
+    if (!err) {
+      // Update the revision ID of our document to reflect the one already
+      // stored in Cloudant.
+      document._rev = body['_rev'];
+
+      // Using the updated revision ID we can add the new document.
+      insertDocument(document, res);
+      addAttachment(id, bufferImgData, contentType[0], res);
+    } else {
+      // The document does not exist, therefore insert it.
+      insertDocument(document, res);
+      addAttachment(id, bufferImgData, contentType[0], res);
     }
-    res.send(newDocument);
-    addAttachment();
-  });
-
-  function addAttachment() {
-    pro_golfers_db.get(id).then((body) => {
-      let revID = body['_rev'];
-      pro_golfers_db.attachment.insert(id, id + '_image', bufferImgData, "image/png", 
-      { rev: revID }, function(err, body) {
-        if (!err) {
-          console.log(body);
-        } else {
-          console.log(err);
-        }
-      }); 
-    });
-  };
+  })
 });

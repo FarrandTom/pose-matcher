@@ -11,73 +11,89 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
   <link rel="stylesheet" href="https://unpkg.com/carbon-components/css/carbon-components.min.css" type="text/css">
   <link rel="stylesheet" type= "text/css" href="style.css">
-  <script src="//assets.adobedtm.com/extensions/EP143333dab9bb4582a773c81f3a840074/AppMeasurement.min.js" async=""></script>
 </head>
 
 <body>
 
-<div class= "title">
-  <h1>Match My Pose</h1>
+<div class="bx--grid outline">
+  <div class="bx--row">
+      <h1 class="bx--col-md-1 outline">ICON PLACEHOLDER</h1>
+      <h1 class="bx--col-md-6 outline">Match My Pose</h1>
+      <h1 class="bx--col-md-1 outline">SYSTEMSAI ICON</h1>
+  </div>
 </div>
 
 <div class="bx--grid">
+  <div class="outline">
+    <p>Simply pick a stance in your golf swing out of; setup, backswing, and follow-through. 
+      Line yourself up with the camera, and finally capture your pose! <br>
+      This will compare your stance to a database of professional golfers, and return the closest
+      match!
+    </p>
+  </div>
+  <div class="bx--row outline">
+    <div class="bx--col-md-4 outline">
+      <button class="bx--btn bx--btn--secondary outline" id="addPhoto">
+        Capture your pose!
+      </button>
+    </div>
+    <div class="bx--offset-md-1 bx--col-md-2 outline">
+      <h2 id= "details">
+          <u>Your Match</u> 
+        </h2>
+        <p class="details" id= "Name">
+          Name:
+        </p>
+        <p class="details" id= "Score">
+          Score:
+        </p>
+    </div>
+  </div>
 
-<div id= "drop" class="bx--row wrapper">
-<div class="bx--col-xs-4 bx--col-xs-6">
-<button class="bx--btn bx--btn--secondary" id="addPhoto" >Capture your pose!</button><br>
-</div>
-<h2 id= "details" class="bx--col-xs-4 bx--col-xs-6" >
-  Your Match
-  </h2>
-</div>
-
-<div class="bx--row wrapper">
-<div class="bx--col-xs-6">
-
-</div>
-<div class="bx--col-xs-6">
-  <p class="details" id= "Name">
-    Name:
-  </p>
-  <p class="details" id= "Score">
-    Score:
-  </p>
-</div>
+  <div class="bx--row wrapper outline">
+    <div class="bx--col-xs-6 outline" id="canvasContainer">  
+    </div>
+    <div class="bx--col-xs-6 outline">
+      <img id="result_image" width= 50% alt=""></img>
+    </div>
+  </div>
 </div>
 
-
-<div class="bx--row wrapper">
-<div class="bx--col-xs-6" id="canvasContainer"></div>
-<div class="bx--col-xs-6">
-<img id="result_image" width= 50% alt=""></img>
-</div>
-</div>
-</div>
-
-<div class="title">
-  <div class="centre">
+<div class="bx--grid outline">
+  <div class="outline">
     <h2><u>Create Your Dataset</u></h2>
   </div>
-  <div class="bx--row">
-    <div class="bx--col-xs-6 wrapper">
+  <div class="bx--row outline">
+    <div class="bx--col-md-4 outline">
       <p class="text">Drag and drop your custom photos here. You can add individual photos 
         to your personal Cloudant 
         database. If you do not have one setup, visit the Github page for this project here.
       </p>
     </div>
-    <div class="bx--col-xs-6">
+    <div class="bx--col-md-4 outline">
       <div class="uploadForm">
-          <form action="/upload_image" method="post"
+          <form id="uploadForm" action="/upload_image" method="post"
           name = "uploadForm" enctype="multipart/form-data">
-            <label for="formName">1) Name:</label>
-            <input id="formName" name="formName" type="text">
-            <label for="poseName">2) Pose:</label>
-            <input id="poseName" name="poseName" type="text">
-            <label for="filePicker">3) Select your photo:</label>
-            <input type="file"
-            id="filePicker" name="filePicker"
-            accept="image/png, image/jpeg">
+              <div class="bx--form-item">
+                  <label class="bx--label" for="formName">Name:</label>
+                  <input class="bx--text-input" id="formName" name="formName" type="text">
+              </div>
+              <br>
+              <div class="bx--form-item">
+                  <label class="bx--label" for="poseName">Pose:</label>
+                  <input class="bx--text-input" id="poseName" name="poseName" type="text">
+              </div>
+              <br>
+              <div class="bx--form-item">
+                  <label class="bx--file--label" for="filePicker">Select your photo</label>
+                  <p class="bx--label-description">Only .jpg and .png files. 500kb max file size.</p>
+                  <input class="bx--file-btn" type="file"
+                  id="filePicker" name="filePicker"
+                  accept="image/png, image/jpeg">
+              </div>
+              <br>
           </form>
+          <p id="documentAddedFeedback"></p>
       </div>
 
     </div>
@@ -85,10 +101,6 @@
 </div>
 
 <script src="sketch.js"></script>
-
-   <div id="sketch-holder" class="bx--grid">
-     <!-- Our sketch will go here! -->
-   </div>
 
 </body>
 
