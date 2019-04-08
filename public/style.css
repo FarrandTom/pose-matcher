@@ -1,7 +1,71 @@
-
 .outline{
   border-width: 1px;
   border-color: black;
   border-style: solid;
 }
 
+.fontSize48 {
+  font-size: 3rem;
+}
+
+.fontSize32 {
+  font-size: 2rem;
+}
+
+.fontSize24 {
+  font-size: 1.5rem;
+}
+
+.fontSize18 {
+  font-size: 1.125rem;
+}
+
+.topAndBottomMargin {
+  margin: 15px 0px;
+}
+
+.topAndBottomPadding {
+  padding: 15px 0px;
+}
+
+.centreAlignment {
+  vertical-align: middle;
+  text-align: center;
+}
+  
+.redText {
+  color: #E01A3A;
+}
+
+.yellowText {
+  color: #F5E10D;
+}
+
+.captureButton {
+  font-size: 2rem;
+  background-color: #006747;
+  color: #F5E10D;
+}
+
+.header {
+  background-color: #006747;
+  color: #fffffa;
+}
+
+.datasetCreation {
+  margin: 20px 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #006747;
+  color: #fffffa;
+}
+
+.footer {
+  vertical-align: middle;
+  text-align: center;
+  padding-bottom: 10px;
+}
+
+.whiteText {
+  color: #fffffa;
+}
