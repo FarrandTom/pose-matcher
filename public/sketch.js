@@ -34,6 +34,8 @@ function setup() {
   filePicker.changed(classifyUpload);
 };
 
+// Used when uploading images to the database. Creates a hidden Img element which
+// can then be fed to the poseNet allowing for the pose arrays to be stored in the database.
 function classifyUpload() {
     let files;
     files = filePicker.elt.files;
@@ -69,7 +71,7 @@ function uploadImgReady(){
       fullData = {'_id': databaseID,
                   'name': formName,
                   'pose': formatPoseName,
-                  'array': uploadPoses,  // Note: the uploadPoses still need to be processed.
+                  'array': uploadPoses,  // Note: the uploadPoses still need to be processed to the 52-float vector form.
                   'imgData': imgData}  
               
       request = $.ajax({

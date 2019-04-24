@@ -3,8 +3,6 @@ const l2norm = require( 'compute-l2norm' );
 const bodyParser = require('body-parser');
 const Cloudant = require('@cloudant/cloudant');
 const cfenv = require('cfenv');
-const fileType = require('file-type');
-const fs = require('fs');
 
 const app = express();
 const server = app.listen(3000);
@@ -28,16 +26,17 @@ try {
   console.log('Loaded local VCAP credentials!');
 } catch (e) {}
 
+// Assigning the loaded VCAP parameters to variables. 
 const appEnvOpts = vcapLocal ? {vcap: vcapLocal} : {}
 const appEnv = cfenv.getAppEnv(appEnvOpts);
 
 // Connect to our Cloudant instance using the local credentials
-// To use env variables (i.e. app is deployed into the cloud) see below:
+// To use env variables (i.e. if you deploy the app into the cloud) see below:
 // https://github.com/IBM-Cloud/get-started-node/blob/master/server.js
 cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
-pro_golfers_db = cloudant.db.use('pro_golfers')
+cloudant_db = cloudant.db.use('dab_db')
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
@@ -65,6 +64,9 @@ function weightedDistanceMatching(poseVector1, poseVector2) {
   return summation1 * summation2;
 }
 
+// Iterating over the results_array and returning the name of the document
+// which has the lowest score (a.k.a the closest match to the uploaded document)
+// out of all the documents within the database. 
 function minValueFromResults(results_array, min_value) {
   for (var entry in results_array) {
     if (results_array[entry]['Score'] === min_value) {
@@ -74,6 +76,8 @@ function minValueFromResults(results_array, min_value) {
   }
 }
 
+// Wrangling the uploaded documents array to be of the same form
+// as the documents stored within the database.
 function formatPoseArray(keypoints) {
   let point;
   let xy_array = [];
@@ -120,7 +124,7 @@ app.post('/poses', (req, res) => {
   keypoints = req.body[0]['pose']['keypoints']
   new_array = formatPoseArray(keypoints);
 
-  pro_golfers_db.list({ include_docs: true }, function(err, body) {
+  cloudant_db.list({ include_docs: true }, function(err, body) {
     if (!err) {
       body.rows.forEach(function(doc) {
         doc_array = doc['doc']['array'];
@@ -141,7 +145,7 @@ app.post('/poses', (req, res) => {
       matching_name = minValueFromResults(results_array, min_value);
       console.log(matching_name);
 
-      pro_golfers_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
+      cloudant_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
         if (!err) {
           successful_response = [matching_name, body.toString('base64')];
           res.send(successful_response);
@@ -152,11 +156,11 @@ app.post('/poses', (req, res) => {
     });
 });
 
-
+// Uploading new pose arrays to the database.
 function insertDocument(document, response) {
-    pro_golfers_db.insert(document, function(err, body){
+    cloudant_db.insert(document, function(err, body){
       if (err) {
-        console.log('[pro_golfers_db.insert]', err.message);
+        console.log('[cloudant_db.insert]', err.message);
         response.send({ message: 'Unable to insert the document array!'});
       } else {
         response.send({ message: 'Successfully added your document array!',
@@ -165,11 +169,11 @@ function insertDocument(document, response) {
     });
   }
 
-
+// Uploading new image attachments to the database.
 function addAttachment(id, bufferImgData, contentType, response) {
-  pro_golfers_db.get(id).then((body) => {
+  cloudant_db.get(id).then((body) => {
     let revID = body['_rev'];
-    pro_golfers_db.attachment.insert(id, id + '_image', bufferImgData, contentType, 
+    cloudant_db.attachment.insert(id, id + '_image', bufferImgData, contentType, 
     { rev: revID }, function(err, body) {
       if (!err) {
         console.log(body);
@@ -180,7 +184,8 @@ function addAttachment(id, bufferImgData, contentType, response) {
   });
 };
 
-
+// Route for adding new documents to the database. 
+// Allowing you to populate your own database of custom images rapidly. 
 app.post('/upload_image', (req, res) => {
   const id = req.body['_id'];
   const name = req.body['name'];
@@ -208,7 +213,7 @@ app.post('/upload_image', (req, res) => {
               'array': newArray}
 
   console.log(id);
-  pro_golfers_db.get(id, function(err, body) {
+  cloudant_db.get(id, function(err, body) {
     if (!err) {
       // Update the revision ID of our document to reflect the one already
       // stored in Cloudant.
