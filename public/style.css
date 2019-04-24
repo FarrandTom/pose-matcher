@@ -24,48 +24,71 @@
   margin: 15px 0px;
 }
 
+.leftAndRightPadding {
+  padding: 0px 15px;
+}
+
 .topAndBottomPadding {
   padding: 15px 0px;
+}
+
+.smallTopAndBottomPadding {
+  padding: 5px 0px;
+}
+
+.fullPadding {
+  padding: 15px 15px;
+}
+
+.blueText {
+  color: #054ada;
 }
 
 .centreAlignment {
   vertical-align: middle;
   text-align: center;
 }
-  
-.redText {
-  color: #E01A3A;
-}
-
-.yellowText {
-  color: #F5E10D;
-}
 
 .captureButton {
-  font-size: 2rem;
-  background-color: #006747;
-  color: #F5E10D;
+  font-size: 1.65rem;
 }
 
 .header {
-  background-color: #006747;
+  padding-top: 10px;
+  background-color: #3d3d3d;
   color: #fffffa;
+}
+
+.subHeader {
+  padding-top: 10px;
+  background-color: #dcdcdc;
+}
+
+.blueBorder {
+  border: 2px solid #054ada; 
 }
 
 .datasetCreation {
   margin: 20px 0px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background-color: #006747;
-  color: #fffffa;
+  background-color: #dcdcdc;
+  border: 2px solid #8c8c8c;
 }
 
 .footer {
-  vertical-align: middle;
+  vertical-align: center;
   text-align: center;
-  padding-bottom: 10px;
+  padding-top: 30px;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #3d3d3d;
 }
 
 .whiteText {
   color: #fffffa;
+}
+
+.iconsAndFooter {
+  padding: 20px 0px;
 }
