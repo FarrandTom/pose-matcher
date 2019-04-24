@@ -67,3 +67,4 @@ You can now run `npm start` in the main directory of the application. (If you do
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/app_screenshot.png "App screenshot")
 
 ### I hope you enjoy tinkering, and please share anything you create!
+
