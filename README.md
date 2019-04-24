@@ -60,4 +60,6 @@ Now create a new file titled `vcap-local.json` in the application's root directo
 
 You can now run `npm start` in the main directory of the application. (If you do not have node.js click [here](https://nodejs.org/en/) to install it). This will launch the Pose Matcher into your browser. You can then use the "Create your own dataset" function to upload .jpg and .png files to your Cloudant database. Capturing your pose will then return the closest match to the photo you have just taken with your webcam. 
 
-I hope you enjoy tinkering, and please share anything you create!
+screenshot
+
+### I hope you enjoy tinkering, and please share anything you create!
