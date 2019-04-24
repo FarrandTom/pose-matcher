@@ -13,4 +13,14 @@ Next, click the Catalog tab and search "Cloudant".
 Create a "Lite" Cloudant instance and select "Get Started".
 
 ## 2. Getting the Credentials
+You will now need to authenticate the Pose Matcher application with your newly created Cloudant database. To do so we will use the "Service Credentials" provided by Cloudant. The credentials act as Cloudant's passport- allowing it to verify itself as belonging to your account, and laying out how other services can communicate to it.
 
+You will access your credentials from the "Service Credentials" tab of the Cloudant instance you are now the proud owner of. 
+
+Screenshot
+
+Now, select and copy your credentials- pasting them into a notepad or clipboard if you would like.
+
+Screenshot
+
+## 3. Pulling It All Together
