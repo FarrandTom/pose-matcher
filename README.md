@@ -16,9 +16,18 @@ Create a "Lite" Cloudant instance. Your new Cloudant instance should look like t
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/cloudant_landing_page.png "Cloudant landing page")
 
-NOTE: Cloudant provides a nice UI if you click on "Launch Cloudant Dashboard", from which you can manage your databases and documents. The [Cloudant docs](https://cloud.ibm.com/docs/services/Cloudant?topic=cloudant-overview#overview) provide more info!
+## 2. Creating your database
+You now need to create a new database within your Cloudant instance to ensure that you have somewhere to put all of your funky images.
 
-## 2. Getting the Credentials
+Fortunately Cloudant provides a nice UI from which you can manage your databases and documents. You will want to click on "Launch Cloudant Dashboard" to get access to it.
+
+![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/launch_cloudant_dashboard.png "Launch Cloudant dashboard")
+
+You can name your database whatever you like, however the default database recorded in `server.js` is `new_db`. You can change that on line number 39.
+
+![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/new_db.png "New database creation")
+
+## 3. Getting the Credentials
 You will now need to authenticate the Pose Matcher application with your newly created Cloudant database. To do so we will use the "Service Credentials" provided by Cloudant. The credentials act as Cloudant's passport- allowing it to verify itself as belonging to your account, and laying out how other services can communicate to it.
 
 You will access your credentials from the "Service Credentials" tab of the Cloudant instance you are now the proud owner of. 
@@ -29,7 +38,7 @@ Now, select and copy your credentials- pasting them into a notepad or clipboard 
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/service_credentials_landing_page.png "Service credentials landing page")
 
-## 3. Pulling It All Together
+## 4. Pulling It All Together
 You will now create a `vcap-local.json` file which will store your Cloudant credentials. To begin with, clone this repository. 
 
 `git clone https://github.com/FarrandTom/pose-matcher`
@@ -60,7 +69,9 @@ Now create a new file titled `vcap-local.json` in the application's root directo
   }
 ```
 
-You can now run `npm start` in the main directory of the application. (If you do not have node.js click [here](https://nodejs.org/en/) to install it). This will launch the Pose Matcher into your browser. You can then use the "Create your own dataset" function to upload .jpg and .png files to your Cloudant database. Capturing your pose will then return the closest match to the photo you have just taken with your webcam. 
+You can now run `npm start` in the main directory of the application. (If you do not have node.js click [here](https://nodejs.org/en/) to install it). This will launch the Pose Matcher into your browser. 
+
+You can then use the "Create your own dataset" function to upload .jpg and .png files to your Cloudant database (if there are no pictures in the database then the app will crash, so it's a good thing to do). Capturing your pose will then return the closest match to the photo you have just taken with your webcam. 
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/app_screenshot.png "App screenshot")
 
