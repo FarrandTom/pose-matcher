@@ -23,7 +23,7 @@ Fortunately Cloudant provides a nice UI from which you can manage your databases
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/launch_cloudant_dashboard.png "Launch Cloudant dashboard")
 
-You can name your database whatever you like, however the default database recorded in `server.js` is `new_db`. You can change that on line number 39.
+You should now create a new database from the right-hand corner of the UI. You can name your database whatever you like, however the default database recorded in `server.js` is `new_db`. You can change that on line number 39.
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/new_db.png "New database creation")
 
