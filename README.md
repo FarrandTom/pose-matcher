@@ -1,6 +1,4 @@
-![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/lady_walking.png "Lady Walking Icon")
-
-# Pose Matcher
+# ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/lady_walking.png "Lady Walking Icon") Pose Matcher
 Create your own pose matching application with a custom dataset!
 
 The Pose Matcher application allows you to quickly get started with pose estimation deep learning technology- running in your browser. You can quickly build a custom dataset of photographs which are then compared against images taken using your webcam. The application will return the closest match, based upon the similarity of the poses in each picture.
