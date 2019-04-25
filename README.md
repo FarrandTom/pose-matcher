@@ -16,7 +16,7 @@ Create a "Lite" Cloudant instance. Your new Cloudant instance should look like t
 
 ![alt text](https://github.com/FarrandTom/pose-matcher/blob/master/readme-images/cloudant_landing_page.png "Cloudant landing page")
 
-## 2. Creating your database
+## 2. Creating Your Database
 You now need to create a new database within your Cloudant instance to ensure that you have somewhere to put all of your funky images.
 
 Fortunately Cloudant provides a nice UI from which you can manage your databases and documents. You will want to click on "Launch Cloudant Dashboard" to get access to it.
