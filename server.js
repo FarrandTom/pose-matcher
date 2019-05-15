@@ -36,7 +36,7 @@ const appEnv = cfenv.getAppEnv(appEnvOpts);
 cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
-cloudant_db = cloudant.db.use('dab_db')
+cloudant_db = cloudant.db.use('pro_golfers')
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
