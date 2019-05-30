@@ -8,11 +8,11 @@ const app = express();
 const server = app.listen(3000);
 
 // Here we are configuring express to use body-parser as middle-ware.
-// This is so we can handle POST requests. 
+// This is so we can handle POST requests.
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // If you wish to upload larger images to the backend then adjust the limit below
-// However, be aware that the Cloudant database will only accept a certain size of 
+// However, be aware that the Cloudant database will only accept a certain size of
 // request.
 app.use(bodyParser.json({limit: '10mb'}));
 
@@ -26,7 +26,7 @@ try {
   console.log('Loaded local VCAP credentials!');
 } catch (e) {}
 
-// Assigning the loaded VCAP parameters to variables. 
+// Assigning the loaded VCAP parameters to variables.
 const appEnvOpts = vcapLocal ? {vcap: vcapLocal} : {}
 const appEnv = cfenv.getAppEnv(appEnvOpts);
 
@@ -36,7 +36,8 @@ const appEnv = cfenv.getAppEnv(appEnvOpts);
 cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
-cloudant_db = cloudant.db.use('dab_db')
+
+cloudant_db = cloudant.db.use('pro_golfers')
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
@@ -66,7 +67,7 @@ function weightedDistanceMatching(poseVector1, poseVector2) {
 
 // Iterating over the results_array and returning the name of the document
 // which has the lowest score (a.k.a the closest match to the uploaded document)
-// out of all the documents within the database. 
+// out of all the documents within the database.
 function minValueFromResults(results_array, min_value) {
   for (var entry in results_array) {
     if (results_array[entry]['Score'] === min_value) {
@@ -130,13 +131,13 @@ app.post('/poses', (req, res) => {
         doc_array = doc['doc']['array'];
 
         compared_score = weightedDistanceMatching(new_array, doc_array);
-  
+
         results_array.push({
           'id': doc['id'],
           'Score': compared_score,
           'Name': doc['doc']['name']
           });
-  
+
         scores_array.push(compared_score);
         });
       }
@@ -173,19 +174,19 @@ function insertDocument(document, response) {
 function addAttachment(id, bufferImgData, contentType, response) {
   cloudant_db.get(id).then((body) => {
     let revID = body['_rev'];
-    cloudant_db.attachment.insert(id, id + '_image', bufferImgData, contentType, 
+    cloudant_db.attachment.insert(id, id + '_image', bufferImgData, contentType,
     { rev: revID }, function(err, body) {
       if (!err) {
         console.log(body);
       } else {
         console.log(err);
       }
-    }); 
+    });
   });
 };
 
-// Route for adding new documents to the database. 
-// Allowing you to populate your own database of custom images rapidly. 
+// Route for adding new documents to the database.
+// Allowing you to populate your own database of custom images rapidly.
 app.post('/upload_image', (req, res) => {
   const id = req.body['_id'];
   const name = req.body['name'];
@@ -199,12 +200,12 @@ app.post('/upload_image', (req, res) => {
   // Must replace the meta data included at the start of the base64 string by the browser
   // This is not used by node, and therefore causes it to corrupt the image.
   const strippedImgData = imgData.replace(/^data:image\/(png|gif|jpeg);base64,/,'');
-  
+
   // Getting the pose classification into the correct format.
   let newArray = formatPoseArray(keypoints);
-  
+
   // Converting our base64 encoded data to buffer- the datatype Cloudant uses
-  // as well as the other open source DB implementations (couchDB etc.) 
+  // as well as the other open source DB implementations (couchDB etc.)
   var bufferImgData = Buffer.from(strippedImgData, 'base64');
 
   document = {'_id': id,
