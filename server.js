@@ -6,6 +6,7 @@ const cfenv = require('cfenv');
 
 const app = express();
 const server = app.listen(3000);
+var similarity = require( 'compute-cosine-similarity' );
 
 // Here we are configuring express to use body-parser as middle-ware.
 // This is so we can handle POST requests.
@@ -37,13 +38,32 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
 
+// cloudant_db = cloudant.db.use('pro_golfers')
 cloudant_db = cloudant.db.use('pro_golfers')
+
+// cosine distance to match poses based on different lines in the skeletons
+
+function cosineDistanceMatching(poseVector1, poseVector2) {
+
+// compare leftShoulder to leftHip line:
+// leftShoulder: x = poseVector[10], y = poseVector[11]
+// leftHip: x = poseVector[22], y = poseVector[23]
+
+let vector1LeftBack = [poseVector1[10]-poseVector1[22], poseVector1[11]-poseVector1[23]]
+
+let vector2LeftBack = [poseVector2[10]-poseVector2[22], poseVector2[11]-poseVector2[23]]
+
+//let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
+
+return similarity(vector1LeftBack, vector2LeftBack);
+}
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
 // Values 34-50: are confidence values for each of the 17 body parts in alphabetical order
 // Value 51: A sum of all the confidence values
 // Again the lower the number, the closer the distance
+
 function weightedDistanceMatching(poseVector1, poseVector2) {
   let vector1PoseXY = poseVector1.slice(0, 34);
   let vector1Confidences = poseVector1.slice(34, 51);
@@ -68,9 +88,18 @@ function weightedDistanceMatching(poseVector1, poseVector2) {
 // Iterating over the results_array and returning the name of the document
 // which has the lowest score (a.k.a the closest match to the uploaded document)
 // out of all the documents within the database.
-function minValueFromResults(results_array, min_value) {
+ // function minValueFromResults(results_array, min_value) {
+ //   for (var entry in results_array) {
+ //     if (results_array[entry]['Score'] === min_value) {
+ //       matching_name = results_array[entry];
+ //       return matching_name;
+ //     }
+ //   }
+ // }
+
+function maxValueFromResults(results_array, max_value) {
   for (var entry in results_array) {
-    if (results_array[entry]['Score'] === min_value) {
+    if (results_array[entry]['Score'] === max_value) {
       matching_name = results_array[entry];
       return matching_name;
     }
@@ -99,16 +128,17 @@ function formatPoseArray(keypoints) {
   };
 
   // Normalising the xy keypoint array using the L2 (euclidean) norm
-  norm = l2norm(xy_array);
-  norm_xy_array = xy_array.map(function(element) {
-    return element/norm;
-  });
-
-  confidence_sum = confidence_array.reduce((a, b) => a + b, 0);
-  confidence_array.push(confidence_sum);
-
-  new_array = norm_xy_array.concat(confidence_array);
-
+  // norm = l2norm(xy_array);
+  // norm_xy_array = xy_array.map(function(element) {
+  //   return element/norm;
+  // });
+  //
+  // confidence_sum = confidence_array.reduce((a, b) => a + b, 0);
+  // confidence_array.push(confidence_sum);
+  //
+  // new_array = norm_xy_array.concat(confidence_array);
+  new_array = xy_array; // delete this line and uncomment above to normalise
+  // unneccesary for cosine distance
   return new_array;
 }
 
@@ -130,7 +160,8 @@ app.post('/poses', (req, res) => {
       body.rows.forEach(function(doc) {
         doc_array = doc['doc']['array'];
 
-        compared_score = weightedDistanceMatching(new_array, doc_array);
+//        compared_score = weightedDistanceMatching(new_array, doc_array);
+        compared_score = cosineDistanceMatching(new_array, doc_array);
 
         results_array.push({
           'id': doc['id'],
@@ -142,8 +173,10 @@ app.post('/poses', (req, res) => {
         });
       }
 
-      const min_value = Math.min.apply(Math, scores_array);
-      matching_name = minValueFromResults(results_array, min_value);
+    //  const min_value = Math.min.apply(Math, scores_array);
+      const max_value = Math.max.apply(Math, scores_array);
+    //  matching_name = minValueFromResults(results_array, min_value);
+      matching_name = maxValueFromResults(results_array, max_value);
       console.log(matching_name);
 
       cloudant_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {

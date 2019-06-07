@@ -18,6 +18,7 @@
     "body-parser": "^1.18.3",
     "cfenv": "^1.2.2",
     "cloudant": "^1.10.0-NOTICE",
+    "compute-cosine-similarity": "^1.0.0",
     "compute-l2norm": "^1.1.0",
     "express": "^4.16.4",
     "file-type": "^10.10.0",
