@@ -38,8 +38,8 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
 
- cloudant_db = cloudant.db.use('pro_golfers')
-// cloudant_db = cloudant.db.use('new_db')
+// cloudant_db = cloudant.db.use('pro_golfers')
+ cloudant_db = cloudant.db.use('new_db')
 
 // cosine distance to match poses based on different lines in the skeletons
 
@@ -51,7 +51,7 @@ function cosineDistanceMatching(poseVector1, poseVector2) {
 
 let vector1LeftBack = [poseVector1[10]-poseVector1[22], poseVector1[11]-poseVector1[23]]
 let vector2LeftBack = [poseVector2[10]-poseVector2[22], poseVector2[11]-poseVector2[23]]
-let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
+let leftShoulder_leftHip = similarity(vector1LeftBack, vector2LeftBack);
 //let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
 
 // compare rightShoulder to rightHip line:
@@ -60,7 +60,7 @@ let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
 
 let vector1RightBack = [poseVector1[12]-poseVector1[24], poseVector1[13]-poseVector1[25]]
 let vector2RightBack = [poseVector2[12]-poseVector2[24], poseVector2[13]-poseVector2[25]]
-let RightBack = similarity(vector1RightBack, vector2RightBack);
+let rightShoulder_rightHip = similarity(vector1RightBack, vector2RightBack);
 
 // compare rightShoulder to leftShoulder line:
 // rightShoulder: x = poseVector[12], y = poseVector[13]
@@ -68,7 +68,7 @@ let RightBack = similarity(vector1RightBack, vector2RightBack);
 
 let vector1Torso = [poseVector1[12]-poseVector1[10], poseVector1[13]-poseVector1[11]]
 let vector2Torso = [poseVector2[12]-poseVector2[10], poseVector2[13]-poseVector2[11]]
-let Torso = similarity(vector1Torso, vector2Torso);
+let rightShoulder_leftShoulder = similarity(vector1Torso, vector2Torso);
 
 // compare rightHip to leftHip line:
 // rightHip: x = poseVector[24], y = poseVector[25]
@@ -76,9 +76,9 @@ let Torso = similarity(vector1Torso, vector2Torso);
 
 let vector1Hips = [poseVector1[24]-poseVector1[22], poseVector1[25]-poseVector1[23]]
 let vector2Hips = [poseVector2[24]-poseVector2[22], poseVector2[25]-poseVector2[23]]
-let Hips = similarity(vector1Hips, vector2Hips);
+let rightHip_leftHip = similarity(vector1Hips, vector2Hips);
 
-let Back = 0.5*Hips + 0.5*Torso + RightBack + LeftBack;
+let Back = 0.5*rightHip_leftHip + 0.5*rightShoulder_leftShoulder + rightShoulder_rightHip + leftShoulder_leftHip;
 
 // compare rightHip to rightKnee line:
 // rightHip: x = poseVector[24], y = poseVector[25]
@@ -86,7 +86,7 @@ let Back = 0.5*Hips + 0.5*Torso + RightBack + LeftBack;
 
 let vector1RightLeg = [poseVector1[24]-poseVector1[28], poseVector1[25]-poseVector1[29]]
 let vector2RightLeg = [poseVector2[24]-poseVector2[28], poseVector2[25]-poseVector2[29]]
-let RightLeg = similarity(vector1RightLeg, vector2RightLeg); //could multiply by keypoint confidence
+let rightHip_rightKnee = similarity(vector1RightLeg, vector2RightLeg); //could multiply by keypoint confidence
 // values in here
 
 // compare leftHip to leftKnee line:
@@ -95,7 +95,7 @@ let RightLeg = similarity(vector1RightLeg, vector2RightLeg); //could multiply by
 
 let vector1LeftLeg = [poseVector1[22]-poseVector1[26], poseVector1[23]-poseVector1[27]]
 let vector2LeftLeg = [poseVector2[22]-poseVector2[26], poseVector2[23]-poseVector2[27]]
-let LeftLeg = similarity(vector1LeftLeg, vector2LeftLeg);
+let leftHip_leftKnee = similarity(vector1LeftLeg, vector2LeftLeg);
 
 // compare leftAnkle to leftKnee line:
 // leftAnkle: x = poseVector[30], y = poseVector[31]
@@ -103,7 +103,7 @@ let LeftLeg = similarity(vector1LeftLeg, vector2LeftLeg);
 
 let vector1LeftAnkle = [poseVector1[30]-poseVector1[26], poseVector1[31]-poseVector1[27]]
 let vector2LeftAnkle = [poseVector2[30]-poseVector2[26], poseVector2[31]-poseVector2[27]]
-let LeftAnkle = similarity(vector1LeftAnkle, vector2LeftAnkle);
+let leftAnkle_leftKnee = similarity(vector1LeftAnkle, vector2LeftAnkle);
 
 // compare rightAnkle to rightKnee line:
 // rightAnkle: x = poseVector[32], y = poseVector[33]
@@ -111,9 +111,9 @@ let LeftAnkle = similarity(vector1LeftAnkle, vector2LeftAnkle);
 
 let vector1RightAnkle = [poseVector1[32]-poseVector1[28], poseVector1[33]-poseVector1[29]]
 let vector2RightAnkle = [poseVector2[32]-poseVector2[28], poseVector2[33]-poseVector2[29]]
-let RightAnkle = similarity(vector1RightAnkle, vector2RightAnkle);
+let rightAnkle_rightKnee = similarity(vector1RightAnkle, vector2RightAnkle);
 
-let Legs = RightAnkle + RightLeg + LeftAnkle + LeftLeg
+let Legs = rightAnkle_rightKnee + rightHip_rightKnee + leftAnkle_leftKnee + leftHip_leftKnee
 
 // compare leftShoulder to leftElbow line:
 // leftShoulder: x = poseVector[10], y = poseVector[11]
@@ -121,7 +121,7 @@ let Legs = RightAnkle + RightLeg + LeftAnkle + LeftLeg
 
 let vector1LeftArm = [poseVector1[10]-poseVector1[14], poseVector1[11]-poseVector1[15]]
 let vector2LeftArm = [poseVector2[10]-poseVector2[14], poseVector2[11]-poseVector2[15]]
-let LeftArm = similarity(vector1LeftArm, vector2LeftArm);
+let leftShoulder_leftElbow = similarity(vector1LeftArm, vector2LeftArm);
 
 
 // compare rightShoulder to rightElbow line:
@@ -130,7 +130,7 @@ let LeftArm = similarity(vector1LeftArm, vector2LeftArm);
 
 let vector1RightArm = [poseVector1[12]-poseVector1[16], poseVector1[13]-poseVector1[17]]
 let vector2RightArm = [poseVector2[12]-poseVector2[16], poseVector2[13]-poseVector2[17]]
-let RightArm = similarity(vector1RightArm, vector2RightArm);
+let rightShoulder_rightElbow = similarity(vector1RightArm, vector2RightArm);
 
 // compare rightWrist to rightElbow line:
 // rightWrist: x = poseVector[20], y = poseVector[21]
@@ -138,7 +138,7 @@ let RightArm = similarity(vector1RightArm, vector2RightArm);
 
 let vector1RightForearm = [poseVector1[20]-poseVector1[16], poseVector1[21]-poseVector1[17]]
 let vector2RightForearm = [poseVector2[20]-poseVector2[16], poseVector2[21]-poseVector2[17]]
-let RightForearm = similarity(vector1RightForearm, vector2RightForearm);
+let rightWrist_rightElbow = similarity(vector1RightForearm, vector2RightForearm);
 
 // compare leftShoulder to leftElbow line:
 // leftWrist: x = poseVector[18], y = poseVector[19]
@@ -146,11 +146,22 @@ let RightForearm = similarity(vector1RightForearm, vector2RightForearm);
 
 let vector1LeftForearm = [poseVector1[18]-poseVector1[14], poseVector1[19]-poseVector1[15]]
 let vector2LeftForearm = [poseVector2[18]-poseVector2[14], poseVector2[19]-poseVector2[15]]
-let LeftForearm = similarity(vector1LeftForearm, vector2LeftForearm);
+let leftWrist_leftElbow = similarity(vector1LeftForearm, vector2LeftForearm);
 
-Arms = LeftForearm + LeftArm + RightArm + RightForearm
-
-return Back + Legs + Arms
+Arms = leftShoulder_leftElbow + leftWrist_leftElbow + rightShoulder_rightElbow + rightWrist_rightElbow
+let Body = Back + Legs + Arms
+return [Body,
+        rightShoulder_rightHip,
+        rightShoulder_leftShoulder,
+        rightHip_leftHip,
+        rightHip_rightKnee,
+        leftHip_leftKnee,
+        leftAnkle_leftKnee,
+        rightAnkle_rightKnee,
+        leftShoulder_leftElbow,
+        rightShoulder_rightElbow,
+        rightWrist_rightElbow,
+        leftWrist_leftElbow ];
 }
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
@@ -193,6 +204,7 @@ return Back + Legs + Arms
  // }
 
 function maxValueFromResults(results_array, max_value) {
+  console.log(results_array)
   for (var entry in results_array) {
     if (results_array[entry]['Score'] === max_value) {
       matching_name = results_array[entry];
@@ -260,11 +272,22 @@ app.post('/poses', (req, res) => {
 
         results_array.push({
           'id': doc['id'],
-          'Score': compared_score,
-          'Name': doc['doc']['name']
+          'Score': compared_score[0],
+          'Name': doc['doc']['name'],
+          'rightShoulder_rightHip': compared_score[1],
+          'rightShoulder_leftShoulder': compared_score[2],
+          'rightHip_leftHip': compared_score[3],
+          'rightHip_rightKnee': compared_score[4],
+          'leftHip_leftKnee': compared_score[5],
+          'leftAnkle_leftKnee': compared_score[6],
+          'rightAnkle_rightKnee': compared_score[7],
+          'leftShoulder_leftElbow': compared_score[8],
+          'rightShoulder_rightElbow': compared_score[9],
+          'rightWrist_rightElbow': compared_score[10],
+          'leftWrist_leftElbow': compared_score[11]
           });
 
-        scores_array.push(compared_score);
+        scores_array.push(compared_score[0]);
         });
       }
 
