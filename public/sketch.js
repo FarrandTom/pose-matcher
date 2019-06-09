@@ -42,6 +42,7 @@ function setup() {
       videoIsPlaying = true;
       poses.length = 0;
       myp5_1.poses.length = 0;
+      document.getElementById("Name").innerHTML = "Name: ";
   //    myp5_1.img.hide(); //need to really delete this
       // clear myp5_1 canvas
       addPhoto.innerHTML = "Capture Pose";
@@ -59,8 +60,8 @@ function setup() {
   // For when a new picture is uploaded to the website.
   // This watches the filePicker element, if there is a change it populates
   // the form with the poses array.
-  filePicker = select('#filePicker');
-  filePicker.changed(classifyUpload);
+  // filePicker = select('#filePicker');
+  // filePicker.changed(classifyUpload);
 };
 
 
@@ -87,6 +88,11 @@ p.draw = function() {
     } else {
       p.clear();
     }
+
+    p.strokeWeight(8);
+    p.stroke(0,103,71);
+    p.noFill();
+    p.rect(0,0,p.width,p.height);
   }
 }
 
@@ -173,7 +179,7 @@ request.done(function (response){
     buffer = response[1];
 
     player_name = response[0]['Name'];
-    score = response[0]['Score'];
+  //  score = response[0]['Score'];
 //    Body = {'Back': response[0]['Back'],
 //            'Legs':  response[0]['Legs'],
 //            'Arms': response[0]['Arms']};
@@ -186,7 +192,7 @@ request.done(function (response){
     myp5_1.img.hide();
 
     document.getElementById("Name").innerHTML = "Name: " + player_name;
-    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*10)*100)) + "%";
+//    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*10)*100)) + "%";
     });
 }
 
@@ -236,6 +242,10 @@ function draw() {
   image(video, 0, 0, width, height);
 // drawKeypoints(poses);
   drawSkeleton(poses);
+  strokeWeight(8);
+  stroke(0,103,71);
+  noFill();
+  rect(0, 0, width, height);
 }
 
 // // A function to draw ellipses over the detected keypoints
@@ -284,6 +294,7 @@ function drawSkeleton() {
     for (let j = 0; j < poses[i].skeleton.length; j++) {
       let partA = poses[i].skeleton[j][0];
       let partB = poses[i].skeleton[j][1];
+      strokeWeight(2);
       stroke(224, 26, 58);
       line(poses[i].skeleton[j][0].position.x, poses[i].skeleton[j][0].position.y, poses[i].skeleton[j][1].position.x, poses[i].skeleton[j][1].position.y);
     }
@@ -300,21 +311,26 @@ myp5_1.drawSkeleton = function() {
   //  for (let j = 0; j < 1; j++) {
 //  console.log(myp5_1.poses[0].skeleton)
     for (let j = 0; j < myp5_1.poses[0].skeleton.length; j++) {
-      let partA = myp5_1.poses[0].skeleton[j][0];
-      let partB = myp5_1.poses[0].skeleton[j][1];
       let partAname = myp5_1.poses[0].skeleton[j][0]["part"]
       let partBname = myp5_1.poses[0].skeleton[j][1]["part"]
       let Bodyparts = Object.keys(Body)
 //      console.log(Object.entries(Body))
     for (let k = 0; k < poses[0].skeleton.length; k++) {
+      let partA = myp5_1.poses[0].skeleton[k][0];
+      let partB = myp5_1.poses[0].skeleton[k][1];
       let confidenceString = poses[0].skeleton[k][0]['part'] + poses[0].skeleton[k][1]['part']
+      let confidence = 0.5*(poses[0].skeleton[k][0]['score'] +  poses[0].skeleton[k][1]['score'])
       for (let i = 0; i < Bodyparts.length; i++)
       {
         if (Bodyparts[i].includes(partAname && partBname) && confidenceString.includes(partAname && partBname)) {
-        myp5_1.strokeWeight((Object.entries(Body)[i][1])*10) // * (confidence values))
+          if (Object.entries(Body)[i][1] > 0.98 && confidence > 0.98) {
+            console.log(Object.entries(Body)[i])
+            let alpha = confidence
+      //      myp5_1.strokeWeight(confidence*10) // * (confidence values))
     //    myp5_1.strokeWeight(10);
-        myp5_1.stroke(224, 26, 58);
-        myp5_1.line((partA.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partA.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))), (partB.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partB.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))));
+            myp5_1.stroke(225, 26, 58);
+            myp5_1.line((partA.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partA.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))), (partB.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partB.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))));
+      }
       }
       }
       // let found = $(Body).find(function(element) {
