@@ -38,8 +38,8 @@ cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
 
-// cloudant_db = cloudant.db.use('pro_golfers')
-cloudant_db = cloudant.db.use('pro_golfers')
+ cloudant_db = cloudant.db.use('pro_golfers')
+// cloudant_db = cloudant.db.use('new_db')
 
 // cosine distance to match poses based on different lines in the skeletons
 
@@ -50,12 +50,107 @@ function cosineDistanceMatching(poseVector1, poseVector2) {
 // leftHip: x = poseVector[22], y = poseVector[23]
 
 let vector1LeftBack = [poseVector1[10]-poseVector1[22], poseVector1[11]-poseVector1[23]]
-
 let vector2LeftBack = [poseVector2[10]-poseVector2[22], poseVector2[11]-poseVector2[23]]
-
+let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
 //let LeftBack = similarity(vector1LeftBack, vector2LeftBack);
 
-return similarity(vector1LeftBack, vector2LeftBack);
+// compare rightShoulder to rightHip line:
+// rightShoulder: x = poseVector[12], y = poseVector[13]
+// rightHip: x = poseVector[24], y = poseVector[25]
+
+let vector1RightBack = [poseVector1[12]-poseVector1[24], poseVector1[13]-poseVector1[25]]
+let vector2RightBack = [poseVector2[12]-poseVector2[24], poseVector2[13]-poseVector2[25]]
+let RightBack = similarity(vector1RightBack, vector2RightBack);
+
+// compare rightShoulder to leftShoulder line:
+// rightShoulder: x = poseVector[12], y = poseVector[13]
+// leftShoulder: x = poseVector[10], y = poseVector[11]
+
+let vector1Torso = [poseVector1[12]-poseVector1[10], poseVector1[13]-poseVector1[11]]
+let vector2Torso = [poseVector2[12]-poseVector2[10], poseVector2[13]-poseVector2[11]]
+let Torso = similarity(vector1Torso, vector2Torso);
+
+// compare rightHip to leftHip line:
+// rightHip: x = poseVector[24], y = poseVector[25]
+// leftHip: x = poseVector[22], y = poseVector[23]
+
+let vector1Hips = [poseVector1[24]-poseVector1[22], poseVector1[25]-poseVector1[23]]
+let vector2Hips = [poseVector2[24]-poseVector2[22], poseVector2[25]-poseVector2[23]]
+let Hips = similarity(vector1Hips, vector2Hips);
+
+let Back = 0.5*Hips + 0.5*Torso + RightBack + LeftBack;
+
+// compare rightHip to rightKnee line:
+// rightHip: x = poseVector[24], y = poseVector[25]
+// rightKnee: x = poseVector[28], y = poseVector[29]
+
+let vector1RightLeg = [poseVector1[24]-poseVector1[28], poseVector1[25]-poseVector1[29]]
+let vector2RightLeg = [poseVector2[24]-poseVector2[28], poseVector2[25]-poseVector2[29]]
+let RightLeg = similarity(vector1RightLeg, vector2RightLeg); //could multiply by keypoint confidence
+// values in here
+
+// compare leftHip to leftKnee line:
+// leftHip: x = poseVector[22], y = poseVector[23]
+// leftKnee: x = poseVector[26], y = poseVector[27]
+
+let vector1LeftLeg = [poseVector1[22]-poseVector1[26], poseVector1[23]-poseVector1[27]]
+let vector2LeftLeg = [poseVector2[22]-poseVector2[26], poseVector2[23]-poseVector2[27]]
+let LeftLeg = similarity(vector1LeftLeg, vector2LeftLeg);
+
+// compare leftAnkle to leftKnee line:
+// leftAnkle: x = poseVector[30], y = poseVector[31]
+// leftKnee: x = poseVector[26], y = poseVector[27]
+
+let vector1LeftAnkle = [poseVector1[30]-poseVector1[26], poseVector1[31]-poseVector1[27]]
+let vector2LeftAnkle = [poseVector2[30]-poseVector2[26], poseVector2[31]-poseVector2[27]]
+let LeftAnkle = similarity(vector1LeftAnkle, vector2LeftAnkle);
+
+// compare rightAnkle to rightKnee line:
+// rightAnkle: x = poseVector[32], y = poseVector[33]
+// rightKnee: x = poseVector[28], y = poseVector[29]
+
+let vector1RightAnkle = [poseVector1[32]-poseVector1[28], poseVector1[33]-poseVector1[29]]
+let vector2RightAnkle = [poseVector2[32]-poseVector2[28], poseVector2[33]-poseVector2[29]]
+let RightAnkle = similarity(vector1RightAnkle, vector2RightAnkle);
+
+let Legs = RightAnkle + RightLeg + LeftAnkle + LeftLeg
+
+// compare leftShoulder to leftElbow line:
+// leftShoulder: x = poseVector[10], y = poseVector[11]
+// leftElbow: x = poseVector[14], y = poseVector[15]
+
+let vector1LeftArm = [poseVector1[10]-poseVector1[14], poseVector1[11]-poseVector1[15]]
+let vector2LeftArm = [poseVector2[10]-poseVector2[14], poseVector2[11]-poseVector2[15]]
+let LeftArm = similarity(vector1LeftArm, vector2LeftArm);
+
+
+// compare rightShoulder to rightElbow line:
+// rightShoulder: x = poseVector[12], y = poseVector[13]
+// rightElbow: x = poseVector[16], y = poseVector[17]
+
+let vector1RightArm = [poseVector1[12]-poseVector1[16], poseVector1[13]-poseVector1[17]]
+let vector2RightArm = [poseVector2[12]-poseVector2[16], poseVector2[13]-poseVector2[17]]
+let RightArm = similarity(vector1RightArm, vector2RightArm);
+
+// compare rightWrist to rightElbow line:
+// rightWrist: x = poseVector[20], y = poseVector[21]
+// rightElbow: x = poseVector[16], y = poseVector[17]
+
+let vector1RightForearm = [poseVector1[20]-poseVector1[16], poseVector1[21]-poseVector1[17]]
+let vector2RightForearm = [poseVector2[20]-poseVector2[16], poseVector2[21]-poseVector2[17]]
+let RightForearm = similarity(vector1RightForearm, vector2RightForearm);
+
+// compare leftShoulder to leftElbow line:
+// leftWrist: x = poseVector[18], y = poseVector[19]
+// leftElbow: x = poseVector[14], y = poseVector[15]
+
+let vector1LeftForearm = [poseVector1[18]-poseVector1[14], poseVector1[19]-poseVector1[15]]
+let vector2LeftForearm = [poseVector2[18]-poseVector2[14], poseVector2[19]-poseVector2[15]]
+let LeftForearm = similarity(vector1LeftForearm, vector2LeftForearm);
+
+Arms = LeftForearm + LeftArm + RightArm + RightForearm
+
+return Back + Legs + Arms
 }
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
@@ -64,26 +159,26 @@ return similarity(vector1LeftBack, vector2LeftBack);
 // Value 51: A sum of all the confidence values
 // Again the lower the number, the closer the distance
 
-function weightedDistanceMatching(poseVector1, poseVector2) {
-  let vector1PoseXY = poseVector1.slice(0, 34);
-  let vector1Confidences = poseVector1.slice(34, 51);
-  let vector1ConfidenceSum = poseVector1.slice(51, 52);
-
-  let vector2PoseXY = poseVector2.slice(0, 34);
-
-  // First summation
-  let summation1 = 1 / vector1ConfidenceSum;
-
-  // Second summation
-  let summation2 = 0;
-  for (let i = 0; i < vector1PoseXY.length; i++) {
-    let tempConf = Math.floor(i / 2);
-    let tempSum = vector1Confidences[tempConf] * Math.abs(vector1PoseXY[i] - vector2PoseXY[i]);
-    summation2 = summation2 + tempSum;
-  }
-
-  return summation1 * summation2;
-}
+// function weightedDistanceMatching(poseVector1, poseVector2) {
+//   let vector1PoseXY = poseVector1.slice(0, 34);
+//   let vector1Confidences = poseVector1.slice(34, 51);
+//   let vector1ConfidenceSum = poseVector1.slice(51, 52);
+//
+//   let vector2PoseXY = poseVector2.slice(0, 34);
+//
+//   // First summation
+//   let summation1 = 1 / vector1ConfidenceSum;
+//
+//   // Second summation
+//   let summation2 = 0;
+//   for (let i = 0; i < vector1PoseXY.length; i++) {
+//     let tempConf = Math.floor(i / 2);
+//     let tempSum = vector1Confidences[tempConf] * Math.abs(vector1PoseXY[i] - vector2PoseXY[i]);
+//     summation2 = summation2 + tempSum;
+//   }
+//
+//   return summation1 * summation2;
+// }
 
 // Iterating over the results_array and returning the name of the document
 // which has the lowest score (a.k.a the closest match to the uploaded document)
@@ -128,16 +223,16 @@ function formatPoseArray(keypoints) {
   };
 
   // Normalising the xy keypoint array using the L2 (euclidean) norm
-  // norm = l2norm(xy_array);
-  // norm_xy_array = xy_array.map(function(element) {
-  //   return element/norm;
-  // });
+   norm = l2norm(xy_array);
+   norm_xy_array = xy_array.map(function(element) {
+     return element/norm;
+   });
   //
-  // confidence_sum = confidence_array.reduce((a, b) => a + b, 0);
-  // confidence_array.push(confidence_sum);
+   confidence_sum = confidence_array.reduce((a, b) => a + b, 0);
+   confidence_array.push(confidence_sum);
   //
-  // new_array = norm_xy_array.concat(confidence_array);
-  new_array = xy_array; // delete this line and uncomment above to normalise
+   new_array = norm_xy_array.concat(confidence_array);
+//  new_array = xy_array; // delete this line and uncomment above to normalise
   // unneccesary for cosine distance
   return new_array;
 }
