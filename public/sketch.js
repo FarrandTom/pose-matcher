@@ -316,15 +316,17 @@ myp5_1.drawSkeleton = function() {
       let Bodyparts = Object.keys(Body)
 //      console.log(Object.entries(Body))
     for (let k = 0; k < poses[0].skeleton.length; k++) {
-      let partA = myp5_1.poses[0].skeleton[k][0];
-      let partB = myp5_1.poses[0].skeleton[k][1];
+      let partA = myp5_1.poses[0].skeleton[j][0];
+      let partB = myp5_1.poses[0].skeleton[j][1];
       let confidenceString = poses[0].skeleton[k][0]['part'] + poses[0].skeleton[k][1]['part']
       let confidence = 0.5*(poses[0].skeleton[k][0]['score'] +  poses[0].skeleton[k][1]['score'])
       for (let i = 0; i < Bodyparts.length; i++)
       {
         if (Bodyparts[i].includes(partAname && partBname) && confidenceString.includes(partAname && partBname)) {
-          if (Object.entries(Body)[i][1] > 0.98 && confidence > 0.98) {
-            console.log(Object.entries(Body)[i])
+          if (Object.entries(Body)[i][1] > 0.97 && confidence > 0.90 && Object.entries(Body)[i][0].includes(partAname) && Object.entries(Body)[i][0].includes(partBname) ) {
+            //console.log(Object.entries(Body)[i])
+            //console.log(myp5_1.poses[0].skeleton[j][0]["part"])
+            //console.log(myp5_1.poses[0].skeleton[j][1]["part"])
             let alpha = confidence
       //      myp5_1.strokeWeight(confidence*10) // * (confidence values))
     //    myp5_1.strokeWeight(10);
