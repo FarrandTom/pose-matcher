@@ -60,8 +60,8 @@ function setup() {
   // For when a new picture is uploaded to the website.
   // This watches the filePicker element, if there is a change it populates
   // the form with the poses array.
-  // filePicker = select('#filePicker');
-  // filePicker.changed(classifyUpload);
+// filePicker = select('#filePicker');
+//  filePicker.changed(classifyUpload);
 };
 
 
@@ -295,7 +295,7 @@ function drawSkeleton() {
       let partA = poses[i].skeleton[j][0];
       let partB = poses[i].skeleton[j][1];
       strokeWeight(2);
-      stroke(224, 26, 58);
+      stroke(0,98,255);
       line(poses[i].skeleton[j][0].position.x, poses[i].skeleton[j][0].position.y, poses[i].skeleton[j][1].position.x, poses[i].skeleton[j][1].position.y);
     }
   }
@@ -330,7 +330,7 @@ myp5_1.drawSkeleton = function() {
             let alpha = confidence
       //      myp5_1.strokeWeight(confidence*10) // * (confidence values))
     //    myp5_1.strokeWeight(10);
-            myp5_1.stroke(225, 26, 58);
+            myp5_1.stroke(0,98,255);
             myp5_1.line((partA.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partA.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))), (partB.position.x*myp5_1.scalingFactor + ((myp5_1.width/2)-(myp5_1.img.width/2))), (partB.position.y*myp5_1.scalingFactor + ((myp5_1.height/2)-(myp5_1.img.height/2))));
       }
       }
