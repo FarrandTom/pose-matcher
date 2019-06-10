@@ -37,12 +37,9 @@ const appEnv = cfenv.getAppEnv(appEnvOpts);
 cloudant = Cloudant(appEnv.services['cloudantNoSQLDB'][0].credentials);
 
 // Connect to the database we will use.
-<<<<<<< HEAD
-cloudant_db = cloudant.db.use('pro_golfers')
-=======
 
 // cloudant_db = cloudant.db.use('pro_golfers')
- cloudant_db = cloudant.db.use('new_db')
+cloudant_db = cloudant.db.use('new_db')
 
 // cosine distance to match poses based on different lines in the skeletons
 
@@ -166,7 +163,6 @@ return [Body,
         rightWrist_rightElbow,
         leftWrist_leftElbow ];
 }
->>>>>>> a72e9c19d6d249709ffbbf079b5a42fccdd91432
 
 // poseVector1 and poseVector2 are 52-float vectors composed of:
 // Values 0-33: are x,y coordinates for 17 body parts in alphabetical order
