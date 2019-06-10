@@ -32,7 +32,7 @@
   vertical-align: middle;
   text-align: center;
 }
-  
+
 .redText {
   color: #E01A3A;
 }
@@ -63,6 +63,7 @@
 .footer {
   vertical-align: middle;
   text-align: center;
+  padding-top: 30px;
   padding-bottom: 10px;
 }
 
