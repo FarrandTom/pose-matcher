@@ -8,6 +8,8 @@ let filePicker;
 let uploadImg;
 
 
+// function preload goes here
+
 
 function setup() {
   createCanvas(600, 450).parent('canvasContainer');
@@ -42,7 +44,11 @@ function setup() {
       videoIsPlaying = true;
       poses.length = 0;
       myp5_1.poses.length = 0;
-      document.getElementById("Name").innerHTML = "Name: ";
+      document.getElementById("Name").innerHTML = " ";
+      document.getElementById("bio").innerHTML = " ";
+      document.getElementById("Age").innerHTML = " ";
+      document.getElementById("Rank").innerHTML = " ";
+      document.getElementById("footer").style.display = "block";
   //    myp5_1.img.hide(); //need to really delete this
       // clear myp5_1 canvas
       addPhoto.innerHTML = "Capture Pose";
@@ -179,11 +185,15 @@ request.done(function (response){
     buffer = response[1];
 
     player_name = response[0]['Name'];
+    age = response[0]['age'];
+    bio = response[0]['bio'];
+    rank = response[0]['rank'];
   //  score = response[0]['Score'];
 //    Body = {'Back': response[0]['Back'],
 //            'Legs':  response[0]['Legs'],
 //            'Arms': response[0]['Arms']};
       Body = response[0];
+      console.log(response);
 
     full_b64 = "data:image/png;base64," + buffer;
     myp5_1.clear();
@@ -191,7 +201,11 @@ request.done(function (response){
     myp5_1.img = createImg(full_b64, myp5_1.uploadImgReady);
     myp5_1.img.hide();
 
-    document.getElementById("Name").innerHTML = "Name: " + player_name;
+    document.getElementById("Name").innerHTML = player_name;
+    document.getElementById("bio").innerHTML = bio;
+    document.getElementById("Age").innerHTML = "Age: " + age;
+    document.getElementById("Rank").innerHTML = "Rank: " + rank;
+    document.getElementById("footer").style.display = "none";
 //    document.getElementById("Score").innerHTML = "Score: " + round(100-((score*10)*100)) + "%";
     });
 }

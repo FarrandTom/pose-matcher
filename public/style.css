@@ -20,8 +20,22 @@
   font-size: 1.125rem;
 }
 
+.body {
+        overflow: hidden;
+    }
+
 .topAndBottomMargin {
   margin: 15px 0px;
+}
+
+.spacing{
+  visibility: hidden;
+}
+
+.horizontalMargin {
+  margin: 5px 0px;
+  margin-right: 15px;
+  margin-left: 15px;
 }
 
 .topAndBottomPadding {
@@ -63,8 +77,8 @@
 .footer {
   vertical-align: middle;
   text-align: center;
-  padding-top: 30px;
-  padding-bottom: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .whiteText {

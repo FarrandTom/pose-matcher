@@ -16,10 +16,16 @@
 
 <body>
 
+  <style type="text/css">
+      body {
+          overflow-y: hidden;
+      }
+  </style>
+
 <div class="bx--grid header ">
   <div class="bx--row">
       <img class="bx--col-md-1" height="10%" width="95%" src="golf_logo.png" alt="Logo">
-      <h1 class="bx--col-md-6 fontSize48 centreAlignment topAndBottomPadding">SwingMatcher</h1>
+      <h1 class="bx--col-md-6 fontSize48 centreAlignment topAndBottomPadding topAndBottomMargin">SwingMatcher</h1>
       <!--img class="bx--col-md-1" height="10%" src="white_systemsai_logo.svg" alt="SystemsAILogo"-->
   </div>
 </div>
@@ -31,13 +37,19 @@
         Capture Pose
       </button>
     </div>
-    <div class="bx--offset-md-1 bx--col-md-2 centreAlignment ">
+    <div class="bx--col-md-4 centreAlignment ">
       <h2 id= "details">
           <u class="fontSize32 redText">Your Match</u>
         </h2>
+        <div class="bx--row horizontalMargin centreAlignment ">
         <p class="fontSize24" id= "Name">
-          Name:
         </p>
+        <p class="bx--offset-md-1 fontSize24" id= "Age">
+        </p>
+        <p class="bx--offset-md-1 fontSize24" id= "Rank">
+        </p>
+        <div class="spacing fontSize24">h</div>
+      </div>
     </div>
   </div>
 
@@ -46,7 +58,9 @@
     </div>
     <div class="bx--col-md-4 centreAlignment ">
       <div id="canvas2"></div>
+      <div class="horizontalMargin" id="bio"></div>
     </div>
+
   </div>
 </div>
 
@@ -95,7 +109,7 @@
 </div> -->
 
 <div>
-  <footer class="footer fontSize24" >An experimental project by SystemsAI.</footer>
+  <footer class="footer fontSize24" id="footer">An experimental project by SystemsAI.</footer>
 </div>
 
 <script src="sketch.js"></script>

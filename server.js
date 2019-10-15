@@ -204,7 +204,7 @@ return [Body,
  // }
 
 function maxValueFromResults(results_array, max_value) {
-  console.log(results_array)
+  // console.log(results_array)
   for (var entry in results_array) {
     if (results_array[entry]['Score'] === max_value) {
       matching_name = results_array[entry];
@@ -272,6 +272,9 @@ app.post('/poses', (req, res) => {
 
         results_array.push({
           'id': doc['id'],
+          'age': doc['doc']['age'],
+          'rank': doc['doc']['rank'],
+          'bio': doc['doc']['bio'],
           'Score': compared_score[0],
           'Name': doc['doc']['name'],
           'rightShoulder_rightHip': compared_score[1],
@@ -295,7 +298,7 @@ app.post('/poses', (req, res) => {
       const max_value = Math.max.apply(Math, scores_array);
     //  matching_name = minValueFromResults(results_array, min_value);
       matching_name = maxValueFromResults(results_array, max_value);
-      console.log(matching_name);
+      // console.log(matching_name);
 
       cloudant_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
         if (!err) {
@@ -341,6 +344,9 @@ function addAttachment(id, bufferImgData, contentType, response) {
 app.post('/upload_image', (req, res) => {
   const id = req.body['_id'];
   const name = req.body['name'];
+  const age = req.body['age'];
+  const rank = req.body['rank'];
+  const bio = req.body['bio'];
   const pose = req.body['pose'];
   const keypoints = req.body['array'][0]['pose']['keypoints'];
   const imgData = req.body['imgData'];
@@ -361,10 +367,13 @@ app.post('/upload_image', (req, res) => {
 
   document = {'_id': id,
               'name': name,
+              'age': age,
+              'rank': rank,
+              'bio': bio,
               'pose': pose,
               'array': newArray}
 
-  console.log(id);
+  // console.log(id);
   cloudant_db.get(id, function(err, body) {
     if (!err) {
       // Update the revision ID of our document to reflect the one already
