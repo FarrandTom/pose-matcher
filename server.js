@@ -66,9 +66,16 @@ let rightShoulder_rightHip = similarity(vector1RightBack, vector2RightBack);
 // rightShoulder: x = poseVector[12], y = poseVector[13]
 // leftShoulder: x = poseVector[10], y = poseVector[11]
 
+// console.log("rightshoulder" + poseVector1[12], y = poseVector1[13])
+// console.log("leftshoulder" + poseVector1[10], y = poseVector1[11])
+// console.log("rightshoulder" + poseVector2[12], y = poseVector2[13])
+// console.log("leftshoulder" + poseVector2[10], y = poseVector2[11])
+
+
 let vector1Torso = [poseVector1[12]-poseVector1[10], poseVector1[13]-poseVector1[11]]
 let vector2Torso = [poseVector2[12]-poseVector2[10], poseVector2[13]-poseVector2[11]]
 let rightShoulder_leftShoulder = similarity(vector1Torso, vector2Torso);
+
 
 // compare rightHip to leftHip line:
 // rightHip: x = poseVector[24], y = poseVector[25]
@@ -78,7 +85,7 @@ let vector1Hips = [poseVector1[24]-poseVector1[22], poseVector1[25]-poseVector1[
 let vector2Hips = [poseVector2[24]-poseVector2[22], poseVector2[25]-poseVector2[23]]
 let rightHip_leftHip = similarity(vector1Hips, vector2Hips);
 
-let Back = 0.5*rightHip_leftHip + 0.5*rightShoulder_leftShoulder + rightShoulder_rightHip + leftShoulder_leftHip;
+let Back = 0.5*rightHip_leftHip + 0.1*rightShoulder_leftShoulder + rightShoulder_rightHip + leftShoulder_leftHip;
 
 // compare rightHip to rightKnee line:
 // rightHip: x = poseVector[24], y = poseVector[25]
@@ -123,7 +130,6 @@ let vector1LeftArm = [poseVector1[10]-poseVector1[14], poseVector1[11]-poseVecto
 let vector2LeftArm = [poseVector2[10]-poseVector2[14], poseVector2[11]-poseVector2[15]]
 let leftShoulder_leftElbow = similarity(vector1LeftArm, vector2LeftArm);
 
-
 // compare rightShoulder to rightElbow line:
 // rightShoulder: x = poseVector[12], y = poseVector[13]
 // rightElbow: x = poseVector[16], y = poseVector[17]
@@ -140,7 +146,7 @@ let vector1RightForearm = [poseVector1[20]-poseVector1[16], poseVector1[21]-pose
 let vector2RightForearm = [poseVector2[20]-poseVector2[16], poseVector2[21]-poseVector2[17]]
 let rightWrist_rightElbow = similarity(vector1RightForearm, vector2RightForearm);
 
-// compare leftShoulder to leftElbow line:
+// compare leftWrist to leftElbow line:
 // leftWrist: x = poseVector[18], y = poseVector[19]
 // leftElbow: x = poseVector[14], y = poseVector[15]
 
@@ -150,6 +156,7 @@ let leftWrist_leftElbow = similarity(vector1LeftForearm, vector2LeftForearm);
 
 Arms = leftShoulder_leftElbow + leftWrist_leftElbow + rightShoulder_rightElbow + rightWrist_rightElbow
 let Body = Back + Legs + Arms
+
 return [Body,
         rightShoulder_rightHip,
         rightShoulder_leftShoulder,
@@ -269,7 +276,7 @@ app.post('/poses', (req, res) => {
 
 //        compared_score = weightedDistanceMatching(new_array, doc_array);
         compared_score = cosineDistanceMatching(new_array, doc_array);
-
+        // console.log(results_array)
         results_array.push({
           'id': doc['id'],
           'age': doc['doc']['age'],
@@ -287,8 +294,36 @@ app.post('/poses', (req, res) => {
           'leftShoulder_leftElbow': compared_score[8],
           'rightShoulder_rightElbow': compared_score[9],
           'rightWrist_rightElbow': compared_score[10],
-          'leftWrist_leftElbow': compared_score[11]
+          'leftWrist_leftElbow': compared_score[11],
+          'dbrightShoulderx': doc_array[12],
+          'dbrightShouldery': doc_array[13],
+          'dbleftShoulderx': doc_array[10],
+          'dbleftShouldery': doc_array[11],
+          'rightShoulderx': new_array[12],
+          'rightShouldery': new_array[13],
+          'leftShoulderx': new_array[10],
+          'leftShouldery': new_array[11],
+          'dbleftElbowx': doc_array[14],
+          'dbleftElbowy': doc_array[15],
+          'dbleftWristx': doc_array[18],
+          'dbleftWristy': new_array[19],
+          'leftElbowx': new_array[14],
+          'leftElbowy': new_array[15],
+          'leftWristx': new_array[18],
+          'leftWristy': new_array[19]
           });
+
+          // compare leftShoulder to leftElbow line:
+          // leftShoulder: x = poseVector[10], y = poseVector[11]
+          // leftElbow: x = poseVector[14], y = poseVector[15]
+          // compare leftWrist to leftElbow line:
+          // leftWrist: x = poseVector[18], y = poseVector[19]
+          // leftElbow: x = poseVector[14], y = poseVector[15]
+          // console.log("rightshoulder" + poseVector1[12], y = poseVector1[13])
+          // console.log("leftshoulder" + poseVector1[10], y = poseVector1[11])
+          // console.log("rightshoulder" + poseVector2[12], y = poseVector2[13])
+          // console.log("leftshoulder" + poseVector2[10], y = poseVector2[11])
+
 
         scores_array.push(compared_score[0]);
         });
@@ -298,7 +333,7 @@ app.post('/poses', (req, res) => {
       const max_value = Math.max.apply(Math, scores_array);
     //  matching_name = minValueFromResults(results_array, min_value);
       matching_name = maxValueFromResults(results_array, max_value);
-      // console.log(matching_name);
+      console.log(matching_name);
 
       cloudant_db.attachment.get(matching_name['id'], matching_name['id'] + '_image', function(err, body) {
         if (!err) {

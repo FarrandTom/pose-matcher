@@ -24,7 +24,7 @@ function setup() {
   //  maxPoseDetections: 1, //detect only single pose
   //  scoreThreshold: 0.,
   //  nmsRadius: 20,
-  //  detectionType: 'single'
+   detectionType: "single"
   };
 
   // Create a new poseNet method with a single detection
@@ -337,7 +337,7 @@ myp5_1.drawSkeleton = function() {
       for (let i = 0; i < Bodyparts.length; i++)
       {
         if (Bodyparts[i].includes(partAname && partBname) && confidenceString.includes(partAname && partBname)) {
-          if (Object.entries(Body)[i][1] > 0.97 && confidence > 0.90 && Object.entries(Body)[i][0].includes(partAname) && Object.entries(Body)[i][0].includes(partBname) ) {
+          if (Object.entries(Body)[i][1] > 0.96 && confidence > 0.80 && Object.entries(Body)[i][0].includes(partAname) && Object.entries(Body)[i][0].includes(partBname) ) {
             //console.log(Object.entries(Body)[i])
             //console.log(myp5_1.poses[0].skeleton[j][0]["part"])
             //console.log(myp5_1.poses[0].skeleton[j][1]["part"])
