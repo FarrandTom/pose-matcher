@@ -85,7 +85,7 @@ let vector1Hips = [poseVector1[24]-poseVector1[22], poseVector1[25]-poseVector1[
 let vector2Hips = [poseVector2[24]-poseVector2[22], poseVector2[25]-poseVector2[23]]
 let rightHip_leftHip = similarity(vector1Hips, vector2Hips);
 
-let Back = 0.5*rightHip_leftHip + 0.1*rightShoulder_leftShoulder + rightShoulder_rightHip + leftShoulder_leftHip;
+let Back = 0.5*rightHip_leftHip + 0.3*rightShoulder_leftShoulder + rightShoulder_rightHip + leftShoulder_leftHip;
 
 // compare rightHip to rightKnee line:
 // rightHip: x = poseVector[24], y = poseVector[25]
