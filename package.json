@@ -19,7 +19,7 @@
     "cfenv": "^1.2.2",
     "cloudant": "^1.10.0-NOTICE",
     "compute-l2norm": "^1.1.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "file-type": "^10.10.0",
     "mime": "^2.4.0",
     "ml5": "^0.2.1"
